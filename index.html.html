@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="af">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Biz Snapshot SA v2 Friendly</title>
+<style>
+:root{
+  --bg:#fbf8f3;--card:#fffdf9;--ink:#26332d;--muted:#7f8b84;--line:#eee6dc;
+  --sage:#6f927f;--sage-dark:#4f6f60;--sage-soft:#e9f1ec;
+  --peach:#e8b39a;--peach-soft:#fbeee7;--gold:#d7b45d;--gold-soft:#fff7dd;
+  --rose:#c97878;--rose-soft:#fbe8e8;--cream:#fffaf1;--shadow:0 10px 30px rgba(79,70,56,.07);
+}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f8efe4,#e6eee8)}
+.login-card{width:min(450px,100%);background:var(--card);border:1px solid var(--line);border-radius:30px;padding:30px;box-shadow:var(--shadow)}
+.logo{width:58px;height:58px;border-radius:20px;background:var(--sage);color:#fff;display:grid;place-items:center;font-weight:900;letter-spacing:.03em}
+h1,h2,h3{letter-spacing:-.02em}.login h1{font-size:30px;margin:18px 0 6px}.login p{color:var(--muted);margin:0 0 22px;line-height:1.55}
+.tabs{display:flex;gap:8px;background:#f5f0e9;padding:5px;border-radius:14px;margin-bottom:18px}.tab{flex:1;border:0;background:transparent;padding:10px;border-radius:11px;font-weight:800;color:var(--muted)}.tab.active{background:#fff;color:var(--sage-dark);box-shadow:0 3px 10px rgba(76,66,55,.06)}
+label{display:grid;gap:7px;font-size:12px;font-weight:800;color:#536159;margin:13px 0}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px 13px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:#a8bcaf;box-shadow:0 0 0 3px #eef5f0}
+.btn{border:0;border-radius:13px;padding:11px 15px;font-weight:850}.btn-primary{background:var(--sage-dark);color:#fff}.btn-scan{background:var(--peach);color:#fff}.btn-soft{background:#f1ede7;color:#566159}.btn-danger{background:var(--rose-soft);color:#9b4f4f}.full{width:100%}.micro{font-size:11px;color:var(--muted);line-height:1.45}
+.top{height:74px;background:rgba(255,253,249,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:12px}.brand strong{display:block}.brand span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;gap:9px;align-items:center}.year{width:auto}
+.content{max-width:1450px;margin:0 auto;padding:28px}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px}.hero h2{font-size:32px;margin:0 0 5px}.hero p{margin:0;color:var(--muted)}.quick{display:flex;gap:9px;flex-wrap:wrap}
+.welcome{background:linear-gradient(135deg,#fffaf1,#f2f7f3);border:1px solid var(--line);border-radius:22px;padding:18px 20px;margin-bottom:16px;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.welcome strong{display:block;font-size:18px}.welcome span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}.stat{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.stat span{font-size:12px;color:var(--muted);font-weight:750}.stat strong{display:block;font-size:27px;margin:8px 0 3px}.stat small{font-size:11px;color:var(--muted)}
+.stat:nth-child(1){background:#fffdf8}.stat:nth-child(2){background:#fff9f4}.stat:nth-child(3){background:#f7fbf8}.stat:nth-child(4){background:#fffaf0}
+.attention{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}.attention-card{border-radius:18px;padding:14px 16px;border:1px solid var(--line);background:var(--card)}.attention-card strong{display:block;font-size:13px}.attention-card span{display:block;font-size:11px;color:var(--muted);margin-top:3px}.attention-card.good{background:var(--sage-soft)}.attention-card.warn{background:var(--gold-soft)}.attention-card.soft{background:var(--peach-soft)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.panel-head h3{margin:0}.panel-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.months{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.month-card{border:1px solid var(--line);border-radius:18px;padding:15px;background:#fffdfa;transition:.16s;cursor:pointer;min-height:154px}.month-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(87,73,54,.08)}
+.month-top{display:flex;justify-content:space-between;align-items:center}.month-name{font-size:13px;font-weight:900;letter-spacing:.04em}.pill{font-size:10px;border-radius:99px;padding:5px 8px;background:#f0ece6;color:var(--muted);font-weight:800}.pill.good{background:var(--sage-soft);color:var(--sage-dark)}.pill.warn{background:var(--gold-soft);color:#9a741e}
+.month-profit{font-size:23px;font-weight:900;margin:15px 0 10px;color:var(--sage-dark)}.month-lines{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11px;color:var(--muted)}.month-lines strong{display:block;color:var(--ink);font-size:12px;margin-top:2px}
+.detail-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.back{border:0;background:#f0ebe4;color:var(--sage-dark);border-radius:12px;padding:9px 11px;font-weight:900}.detail-title{display:flex;align-items:center;gap:11px}.detail-title h2{margin:0}.detail-title span{color:var(--muted);font-size:12px}
+.month-stats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:16px}.mini-stat{background:#fffdf9;border:1px solid var(--line);border-radius:16px;padding:13px}.mini-stat span{font-size:10px;color:var(--muted);font-weight:800}.mini-stat strong{display:block;margin-top:5px;font-size:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:12px}th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.money{font-variant-numeric:tabular-nums;font-weight:800}.empty{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.action-row{display:flex;gap:8px;flex-wrap:wrap}.receipts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px}.receipt-card{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fffdfa}.receipt-card img{width:100%;height:140px;object-fit:cover;background:#f1eee9}.receipt-card .meta{padding:10px}.receipt-card strong,.receipt-card span{display:block}.receipt-card span{font-size:10px;color:var(--muted);margin-top:4px}
+.notice{background:#f3f7f4;border:1px solid #dce7df;padding:12px 14px;border-radius:14px;color:#567064;font-size:11px;line-height:1.5}
+dialog{border:0;border-radius:24px;width:min(720px,94vw);padding:0;box-shadow:0 30px 90px rgba(80,67,51,.25)}dialog::backdrop{background:rgba(62,56,47,.38)}.dialog-body{padding:22px}.dialog-head{display:flex;justify-content:space-between;align-items:center}.dialog-head h3{margin:0}.close{border:0;background:#f0ebe4;width:34px;height:34px;border-radius:99px;font-size:20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 13px}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}.receipt-box{border:1px dashed #cdbdac;border-radius:15px;padding:13px;background:#fffaf4}.receipt-box input{border:0;padding:0}.preview img{max-width:100%;max-height:250px;border-radius:14px;margin-top:10px}.toast{position:fixed;right:18px;bottom:18px;background:#43594d;color:#fff;padding:11px 14px;border-radius:12px;opacity:0;transform:translateY(8px);transition:.2s;z-index:99;font-size:12px}.toast.show{opacity:1;transform:none}
+@media(max-width:1100px){.stats{grid-template-columns:1fr 1fr}.months{grid-template-columns:repeat(3,1fr)}.month-stats{grid-template-columns:repeat(4,1fr)}.grid2{grid-template-columns:1fr}.attention{grid-template-columns:1fr}}
+@media(max-width:720px){.top{padding:0 14px;height:66px}.content{padding:16px}.hero{align-items:flex-start;flex-direction:column}.hero h2{font-size:25px}.quick{width:100%}.quick .btn{flex:1}.stats{grid-template-columns:1fr 1fr;gap:9px}.stat{padding:14px}.stat strong{font-size:21px}.months{grid-template-columns:1fr 1fr;gap:9px}.month-card{padding:13px;min-height:144px}.month-stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.top .btn-soft{display:none}.detail-head{align-items:flex-start}.action-row .btn{flex:1}.panel{padding:14px}.welcome{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+
+<section id="loginView" class="login">
+  <div class="login-card">
+    <div class="logo">BS</div>
+    <h1>Biz Snapshot SA</h1>
+    <p>’n Sagter, eenvoudiger manier om jou klein besigheid se geld dop te hou.</p>
+    <div class="tabs">
+      <button id="tabLogin" class="tab active">Teken in</button>
+      <button id="tabRegister" class="tab">Nuwe besigheid</button>
+    </div>
+    <form id="loginForm">
+      <label>Besigheidsnaam<input id="loginBusiness" required autocomplete="username"></label>
+      <label>Wagwoord<input id="loginPassword" type="password" required autocomplete="current-password"></label>
+      <button class="btn btn-primary full">Teken in</button>
+    </form>
+    <form id="registerForm" class="hidden">
+      <label>Besigheidsnaam<input id="regBusiness" required></label>
+      <label>Wagwoord<input id="regPassword" type="password" minlength="6" required></label>
+      <div class="form-grid">
+        <label>SARS-buffer %<input id="regSars" type="number" value="25" min="0" max="100" step="0.1"></label>
+        <label>Gee / tiende %<input id="regGiving" type="number" value="10" min="0" max="100" step="0.1"></label>
+      </div>
+      <button class="btn btn-primary full">Skep my besigheid</button>
+    </form>
+    <p class="micro" style="margin-top:16px">Hierdie gratis weergawe hou jou data en strokies op hierdie toestel/browser.</p>
+  </div>
+</section>
+
+<section id="appView" class="hidden">
+<header class="top">
+  <div class="brand"><div class="logo">BS</div><div><strong>Biz Snapshot SA</strong><span id="businessLabel">—</span></div></div>
+  <div class="top-actions">
+    <select id="yearSelect" class="year"></select>
+    <button id="settingsBtn" class="btn btn-soft">Instellings</button>
+    <button id="logoutBtn" class="btn btn-soft">Uit</button>
+  </div>
+</header>
+
+<main class="content">
+<section id="dashboardView">
+  <div class="hero">
+    <div><h2>Jou besigheid se jaar</h2><p>Alles belangrik op een rustige plek.</p></div>
+    <div class="quick">
+      <button id="quickIncome" class="btn btn-primary">+ Voeg Geld In</button>
+      <button id="quickExpense" class="btn btn-primary">− Voeg Uitgawe</button>
+      <button id="quickScan" class="btn btn-scan">📷 Scan Strokie</button>
+    </div>
+  </div>
+
+  <div class="welcome">
+    <div><strong id="welcomeTitle">Welkom terug</strong><span>Hier is wat in jou besigheid aangaan.</span></div>
+    <span class="pill good">Data bly op hierdie toestel</span>
+  </div>
+
+  <div class="stats">
+    <article class="stat"><span>Geld wat ingekom het</span><strong id="yearIncome">R0</strong><small>Werklik ontvang</small></article>
+    <article class="stat"><span>Besigheid se uitgawes</span><strong id="yearExpense">R0</strong><small>Besigheidsposte</small></article>
+    <article class="stat"><span>Wat oorbly</span><strong id="yearProfit">R0</strong><small>Jou wins</small></article>
+    <article class="stat"><span>Hou vir SARS eenkant</span><strong id="yearSars">R0</strong><small id="sarsCaption">Volgens jou buffer</small></article>
+  </div>
+
+  <div class="attention">
+    <article class="attention-card good"><strong id="attentionGood">Alles lyk rustig</strong><span>Geen dringende items nie.</span></article>
+    <article class="attention-card warn"><strong id="attentionOutstanding">R0 uitstaande</strong><span>Geld wat jy nog verwag.</span></article>
+    <article class="attention-card soft"><strong id="attentionUncertain">0 onseker items</strong><span>Goed wat jy dalk nog wil klassifiseer.</span></article>
+  </div>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div><h3>Januarie tot Desember</h3><p>Klik op ’n maand om alles vir daardie maand te sien.</p></div>
+      <span id="yearStatus" class="pill">Nog nie gebruik nie</span>
+    </div>
+    <div id="monthsGrid" class="months"></div>
+  </article>
+</section>
+
+<section id="monthView" class="hidden">
+  <div class="detail-head">
+    <div class="detail-title"><button id="backBtn" class="back">← Jaar</button><div><h2 id="monthTitle">Januarie</h2><span id="monthSubtitle"></span></div></div>
+    <div class="action-row">
+      <button id="monthIncomeBtn" class="btn btn-primary">+ Geld In</button>
+      <button id="monthExpenseBtn" class="btn btn-primary">− Uitgawe</button>
+      <button id="monthScanBtn" class="btn btn-scan">📷 Strokie</button>
+    </div>
+  </div>
+
+  <div class="month-stats">
+    <article class="mini-stat"><span>Geld in</span><strong id="mIncome">R0</strong></article>
+    <article class="mini-stat"><span>Besigheid uit</span><strong id="mExpense">R0</strong></article>
+    <article class="mini-stat"><span>Wat oorbly</span><strong id="mProfit">R0</strong></article>
+    <article class="mini-stat"><span>SARS-plan</span><strong id="mSars">R0</strong></article>
+    <article class="mini-stat"><span>Nog uitstaande</span><strong id="mOutstanding">R0</strong></article>
+    <article class="mini-stat"><span>Onseker</span><strong id="mUncertain">0</strong></article>
+    <article class="mini-stat"><span>Bank gekontroleer</span><strong id="mBank">Nee</strong></article>
+  </div>
+
+  <div class="grid2">
+    <article class="panel">
+      <div class="panel-head"><div><h3>Geld In</h3><p>Wat jy verkoop het en wat jy ontvang het.</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Kliënt / bron</th><th>Wat verkoop?</th><th>Voor fooie</th><th>Fooie</th><th>Ontvang</th><th>Status</th><th></th></tr></thead><tbody id="incomeRows"></tbody></table></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><div><h3>Geld Uit</h3><p>Jou uitgawes vir die maand.</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Betaal aan</th><th>Waarvoor?</th><th>Klas</th><th>Bedrag</th><th>Strokie</th><th></th></tr></thead><tbody id="expenseRows"></tbody></table></div>
+    </article>
+  </div>
+
+  <article class="panel" style="margin-top:16px">
+    <div class="panel-head">
+      <div><h3>Strokies</h3><p>Bewyse vir hierdie maand wat veilig op hierdie toestel bly.</p></div>
+      <label style="display:flex;align-items:center;gap:8px;margin:0;font-size:11px">Ek het my bankrekening gekontroleer
+        <input id="bankChecked" type="checkbox" style="width:auto">
+      </label>
+    </div>
+    <div id="receiptGrid" class="receipts"></div>
+  </article>
+</section>
+</main>
+</section>
+
+<dialog id="txDialog">
+<form id="txForm" class="dialog-body">
+  <div class="dialog-head"><h3 id="txTitle">Nuwe transaksie</h3><button type="button" class="close" onclick="txDialog.close()">×</button></div>
+  <input id="txType" type="hidden">
+  <div class="form-grid">
+    <label>Datum<input id="txDate" type="date" required></label>
+    <label id="partyLabel">Kliënt / bron<input id="txParty" required></label>
+    <label id="purposeLabel">Wat verkoop?<input id="txPurpose"></label>
+    <label>Kategorie<input id="txCategory" placeholder="bv. Verkope, Brandstof"></label>
+    <label id="grossWrap">Verkoop vóór fooie<input id="txGross" type="number" min="0" step="0.01"></label>
+    <label id="feesWrap">Fooie afgetrek<input id="txFees" type="number" min="0" step="0.01" value="0"></label>
+    <label id="classWrap" class="hidden">Waarvoor was dit?
+      <select id="txClass">
+        <option>Vir die besigheid</option>
+        <option>Vir my / my huishouding</option>
+        <option>Vir SARS eenkant gesit</option>
+        <option>Ek is nie seker nie</option>
+      </select>
+    </label>
+    <label id="amountWrap" class="hidden">Bedrag<input id="txAmount" type="number" min="0" step="0.01"></label>
+    <label>Status<select id="txStatus"></select></label>
+    <label id="methodWrap" class="hidden">Betaalmetode<select id="txMethod"><option>EFT</option><option>Kaart</option><option>Kontant</option><option>Ander</option></select></label>
+  </div>
+  <label>Nota<textarea id="txNote" rows="2"></textarea></label>
+  <label id="receiptWrap" class="receipt-box hidden">Strokie / bewys
+    <input id="txReceipt" type="file" accept="image/*,application/pdf" capture="environment">
+    <span class="micro">Hierdie lêer bly op hierdie toestel.</span>
+  </label>
+  <div class="dialog-actions"><button type="button" class="btn btn-soft" onclick="txDialog.close()">Kanselleer</button><button class="btn btn-primary">Stoor</button></div>
+</form>
+</dialog>
+
+<dialog id="scanDialog">
+<form id="scanForm" class="dialog-body">
+  <div class="dialog-head"><h3>Scan strokie</h3><button type="button" class="close" onclick="scanDialog.close()">×</button></div>
+  <div class="notice" style="margin:14px 0">Neem ’n foto. Die app probeer die winkel, datum en totaal voorstel. Jy bevestig dit voordat dit gestoor word.</div>
+  <label class="receipt-box">Neem foto / kies strokie<input id="scanFile" type="file" accept="image/*" capture="environment" required></label>
+  <div id="scanPreview" class="preview"></div>
+  <button id="ocrBtn" type="button" class="btn btn-soft" style="margin-top:10px">Lees strokie op toestel</button>
+  <div id="ocrStatus" class="micro" style="margin-top:8px"></div>
+  <div class="form-grid">
+    <label>Datum<input id="scanDate" type="date"></label>
+    <label>Verskaffer<input id="scanSupplier"></label>
+    <label>Totaal<input id="scanAmount" type="number" min="0" step="0.01"></label>
+    <label>Kategorie<input id="scanCategory" placeholder="bv. Brandstof"></label>
+  </div>
+  <div class="dialog-actions"><button type="button" class="btn btn-soft" onclick="scanDialog.close()">Kanselleer</button><button class="btn btn-scan">Stoor uitgawe</button></div>
+</form>
+</dialog>
+
+<dialog id="settingsDialog">
+<form id="settingsForm" class="dialog-body">
+  <div class="dialog-head"><h3>Instellings</h3><button type="button" class="close" onclick="settingsDialog.close()">×</button></div>
+  <label>Besigheidsnaam<input id="settingsBusiness"></label>
+  <div class="form-grid">
+    <label>SARS-buffer %<input id="settingsSars" type="number" min="0" max="100" step="0.1"></label>
+    <label>Gee / tiende %<input id="settingsGiving" type="number" min="0" max="100" step="0.1"></label>
+  </div>
+  <label>Reeds vir SARS eenkant gesit<input id="settingsSetAside" type="number" min="0" step="0.01"></label>
+  <div class="notice">Hierdie weergawe gebruik nie ’n cloud-databasis nie. Jou data is aan hierdie browser/toestel gekoppel.</div>
+  <div class="dialog-actions">
+    <button id="exportBtn" type="button" class="btn btn-soft">Laai rugsteun af</button>
+    <button class="btn btn-primary">Stoor</button>
+  </div>
+</form>
+</dialog>
+
+<script>
+const DB='bizSnapshotSA_v2_friendly', VER=1;
+let db,current=null,currentMonth=0;
+const months=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AUG','SEP','OKT','NOV','DES'];
+const monthNames=['Januarie','Februarie','Maart','April','Mei','Junie','Julie','Augustus','September','Oktober','November','Desember'];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const money=n=>new Intl.NumberFormat('af-ZA',{style:'currency',currency:'ZAR'}).format(Number(n||0));
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random();
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+function toast(s){let t=$('#toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB,VER);r.onupgradeneeded=()=>{let d=r.result;if(!d.objectStoreNames.contains('accounts'))d.createObjectStore('accounts',{keyPath:'id'});if(!d.objectStoreNames.contains('transactions')){let s=d.createObjectStore('transactions',{keyPath:'id'});s.createIndex('accountId','accountId')}if(!d.objectStoreNames.contains('receipts')){let s=d.createObjectStore('receipts',{keyPath:'id'});s.createIndex('accountId','accountId')}if(!d.objectStoreNames.contains('months')){let s=d.createObjectStore('months',{keyPath:'id'});s.createIndex('accountId','accountId')}};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function st(n,m='readonly'){return db.transaction(n,m).objectStore(n)} function rq(r){return new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function put(n,o){return rq(st(n,'readwrite').put(o))} async function del(n,id){return rq(st(n,'readwrite').delete(id))} async function byAccount(n){return rq(st(n).index('accountId').getAll(current.id))}
+async function hash(s){let b=new TextEncoder().encode(s),h=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')} async function accountByName(n){let a=await rq(st('accounts').getAll());return a.find(x=>x.business.toLowerCase()===n.trim().toLowerCase())}
+function initYears(){let y=new Date().getFullYear();$('#yearSelect').innerHTML=[y-1,y,y+1].map(v=>`<option ${v===y?'selected':''}>${v}</option>`).join('')} function showTab(login){$('#loginForm').classList.toggle('hidden',!login);$('#registerForm').classList.toggle('hidden',login);$('#tabLogin').classList.toggle('active',login);$('#tabRegister').classList.toggle('active',!login)}
+async function register(e){e.preventDefault();let business=$('#regBusiness').value.trim();if(await accountByName(business))return toast('Daardie besigheid bestaan reeds op hierdie toestel.');current={id:uid(),business,passwordHash:await hash($('#regPassword').value),sarsRate:Number($('#regSars').value)/100,givingRate:Number($('#regGiving').value)/100,setAside:0};await put('accounts',current);localStorage.setItem('bizFriendlySession',current.id);openApp()}
+async function login(e){e.preventDefault();let a=await accountByName($('#loginBusiness').value);if(!a||a.passwordHash!==await hash($('#loginPassword').value))return toast('Besigheidsnaam of wagwoord is nie reg nie.');current=a;localStorage.setItem('bizFriendlySession',a.id);openApp()}
+async function restore(){let id=localStorage.getItem('bizFriendlySession');if(!id)return;let a=await rq(st('accounts').get(id));if(a){current=a;openApp()}}
+function openApp(){$('#loginView').classList.add('hidden');$('#appView').classList.remove('hidden');$('#businessLabel').textContent=current.business;$('#welcomeTitle').textContent=`Welkom terug, ${current.business}`;renderDashboard()}
+const year=()=>Number($('#yearSelect').value),tYear=t=>Number((t.date||'').slice(0,4)),tMonth=t=>Number((t.date||'').slice(5,7))-1,received=t=>t.type==='income'&&t.status==='Ontvang'?Math.max(0,Number(t.gross||0)-Number(t.fees||0)):0,bizExpense=t=>t.type==='expense'&&t.classification==='Vir die besigheid'?Number(t.amount||0):0,outstanding=t=>t.type==='income'&&t.status==='Uitstaande'?Number(t.gross||0):0,uncertain=t=>t.type==='expense'&&t.classification==='Ek is nie seker nie';
+async function monthMeta(m){let id=`${current.id}_${year()}_${m}`,v=await rq(st('months').get(id));return v||{id,accountId:current.id,year:year(),month:m,bankChecked:false}} async function statsForMonth(m,allTx){let tx=allTx.filter(t=>tYear(t)===year()&&tMonth(t)===m),inc=tx.reduce((s,t)=>s+received(t),0),out=tx.reduce((s,t)=>s+bizExpense(t),0),profit=inc-out,sars=Math.max(0,profit)*current.sarsRate,outs=tx.reduce((s,t)=>s+outstanding(t),0),unc=tx.filter(uncertain).length,meta=await monthMeta(m);return{tx,inc,out,profit,sars,outs,unc,bank:meta.bankChecked}} function monthStatus(s){if(!s.tx.length)return['Nog leeg',''];if(s.outs>0||s.unc>0||!s.bank)return['Kyk hierna','warn'];return['Alles lyk reg','good']}
+async function renderDashboard(){ $('#dashboardView').classList.remove('hidden');$('#monthView').classList.add('hidden');let tx=await byAccount('transactions'),ys=tx.filter(t=>tYear(t)===year()),inc=ys.reduce((s,t)=>s+received(t),0),out=ys.reduce((s,t)=>s+bizExpense(t),0),profit=inc-out,sars=Math.max(0,profit)*current.sarsRate,outs=ys.reduce((s,t)=>s+outstanding(t),0),unc=ys.filter(uncertain).length;$('#yearIncome').textContent=money(inc);$('#yearExpense').textContent=money(out);$('#yearProfit').textContent=money(profit);$('#yearSars').textContent=money(sars);$('#sarsCaption').textContent=`Teen ${(current.sarsRate*100).toFixed(1)}% van positiewe wins`;$('#attentionOutstanding').textContent=`${money(outs)} uitstaande`;$('#attentionUncertain').textContent=`${unc} onseker item${unc===1?'':'s'}`;$('#attentionGood').textContent=(outs===0&&unc===0)?'Alles lyk rustig':'Daar is iets om na te kyk';let html='',used=0;for(let m=0;m<12;m++){let s=await statsForMonth(m,tx),[status,cl]=monthStatus(s);if(s.tx.length)used++;html+=`<article class="month-card" data-month="${m}"><div class="month-top"><span class="month-name">${months[m]}</span><span class="pill ${cl}">${status}</span></div><div class="month-profit">${money(s.profit)}</div><div class="month-lines"><div>Geld in<strong>${money(s.inc)}</strong></div><div>Besigheid uit<strong>${money(s.out)}</strong></div><div>SARS<strong>${money(s.sars)}</strong></div><div>Uitstaande<strong>${money(s.outs)}</strong></div></div></article>`}$('#monthsGrid').innerHTML=html;$('#yearStatus').textContent=used?`${used} van 12 maande in gebruik`:'Nog nie gebruik nie';$$('.month-card').forEach(c=>c.onclick=()=>openMonth(Number(c.dataset.month)))}
+async function openMonth(m){currentMonth=m;$('#dashboardView').classList.add('hidden');$('#monthView').classList.remove('hidden');$('#monthTitle').textContent=monthNames[m];$('#monthSubtitle').textContent=year();await renderMonth()}
+async function renderMonth(){let all=await byAccount('transactions'),s=await statsForMonth(currentMonth,all);$('#mIncome').textContent=money(s.inc);$('#mExpense').textContent=money(s.out);$('#mProfit').textContent=money(s.profit);$('#mSars').textContent=money(s.sars);$('#mOutstanding').textContent=money(s.outs);$('#mUncertain').textContent=s.unc;$('#mBank').textContent=s.bank?'Ja':'Nee';$('#bankChecked').checked=s.bank;let inc=s.tx.filter(t=>t.type==='income').sort((a,b)=>b.date.localeCompare(a.date)),exp=s.tx.filter(t=>t.type==='expense').sort((a,b)=>b.date.localeCompare(a.date));$('#incomeRows').innerHTML=inc.length?inc.map(t=>`<tr><td>${t.date}</td><td>${esc(t.party)}</td><td>${esc(t.purpose)}</td><td class="money">${money(t.gross)}</td><td class="money">${money(t.fees)}</td><td class="money">${money(Math.max(0,t.gross-t.fees))}</td><td>${esc(t.status)}</td><td><button class="btn btn-danger delete" data-id="${t.id}">×</button></td></tr>`).join(''):`<tr><td colspan="8" class="empty">Nog geen Geld In nie.</td></tr>`;$('#expenseRows').innerHTML=exp.length?exp.map(t=>`<tr><td>${t.date}</td><td>${esc(t.party)}</td><td>${esc(t.purpose)}</td><td>${esc(t.classification)}</td><td class="money">${money(t.amount)}</td><td>${t.receiptId?'✓':'—'}</td><td><button class="btn btn-danger delete" data-id="${t.id}">×</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Nog geen Geld Uit nie.</td></tr>`;$$('.delete').forEach(b=>b.onclick=async()=>{if(confirm('Verwyder hierdie transaksie?')){await del('transactions',b.dataset.id);await renderMonth()}});await renderReceipts(s.tx)}
+async function renderReceipts(monthTx){let ids=new Set(monthTx.map(t=>t.receiptId).filter(Boolean)),rs=(await byAccount('receipts')).filter(r=>ids.has(r.id)),g=$('#receiptGrid');g.innerHTML='';if(!rs.length){g.innerHTML='<div class="empty">Nog geen strokies vir hierdie maand nie.</div>';return}for(let r of rs){let el=document.createElement('article');el.className='receipt-card';let media='<div style="height:140px;display:grid;place-items:center;background:#f3efe9;font-size:12px;color:#7f8b84">Bewys</div>';if(r.type?.startsWith('image/')){let u=URL.createObjectURL(r.blob);media=`<img src="${u}" alt="Strokie">`}el.innerHTML=media+`<div class="meta"><strong>${esc(r.supplier||r.name||'Strokie')}</strong><span>${r.date||''} ${r.amount?'· '+money(r.amount):''}</span><span>Op hierdie toestel</span></div>`;g.appendChild(el)}}
+function dateForMonth(m){let y=year(),d=new Date(y,m+1,0).getDate(),day=(new Date().getFullYear()===y&&new Date().getMonth()===m)?new Date().getDate():1;return `${y}-${String(m+1).padStart(2,'0')}-${String(Math.min(day,d)).padStart(2,'0')}`}
+function openTx(type,m=currentMonth){$('#txForm').reset();$('#txType').value=type;$('#txDate').value=dateForMonth(m);let ex=type==='expense';$('#txTitle').textContent=ex?'Voeg uitgawe by':'Voeg Geld In by';$('#partyLabel').firstChild.textContent=ex?'Betaal aan':'Kliënt / bron';$('#purposeLabel').firstChild.textContent=ex?'Waarvoor?':'Wat het jy verkoop?';$('#grossWrap').classList.toggle('hidden',ex);$('#feesWrap').classList.toggle('hidden',ex);$('#classWrap').classList.toggle('hidden',!ex);$('#amountWrap').classList.toggle('hidden',!ex);$('#methodWrap').classList.toggle('hidden',!ex);$('#receiptWrap').classList.toggle('hidden',!ex);$('#txStatus').innerHTML=ex?'<option>Betaal</option><option>Onseker</option>':'<option>Ontvang</option><option>Uitstaande</option><option>Onseker</option>';txDialog.showModal()}
+async function saveReceipt(file,meta={}){let r={id:uid(),accountId:current.id,name:file.name,type:file.type,size:file.size,blob:file,createdAt:new Date().toISOString(),...meta};await put('receipts',r);return r.id}
+async function saveTx(e){e.preventDefault();let type=$('#txType').value,rid=null;if(type==='expense'&&$('#txReceipt').files[0])rid=await saveReceipt($('#txReceipt').files[0],{supplier:$('#txParty').value,date:$('#txDate').value,amount:Number($('#txAmount').value||0)});let t={id:uid(),accountId:current.id,type,date:$('#txDate').value,party:$('#txParty').value,purpose:$('#txPurpose').value,category:$('#txCategory').value,status:$('#txStatus').value,note:$('#txNote').value,receiptId:rid};if(type==='income'){t.gross=Number($('#txGross').value||0);t.fees=Number($('#txFees').value||0)}else{t.amount=Number($('#txAmount').value||0);t.classification=$('#txClass').value;t.method=$('#txMethod').value}await put('transactions',t);txDialog.close();toast('Mooi — dit is gestoor.');if(!$('#monthView').classList.contains('hidden'))await renderMonth();else await renderDashboard()}
+function openScan(m=currentMonth){currentMonth=m;$('#scanForm').reset();$('#scanDate').value=dateForMonth(m);$('#scanPreview').innerHTML='';$('#ocrStatus').textContent='';scanDialog.showModal()} $('#scanFile').addEventListener('change',()=>{let f=$('#scanFile').files[0];if(f){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="Strokie">`}})
+async function loadOCR(){if(window.Tesseract)return;await new Promise((res,rej)=>{let s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function parseOCR(text){let lines=text.split(/\n/).map(x=>x.trim()).filter(Boolean),supplier=lines[0]||'',vals=[...text.matchAll(/(?:R\s*)?(\d{1,7}[.,]\d{2})/g)].map(m=>Number(m[1].replace(',','.'))).filter(n=>n>0),amount=vals.length?Math.max(...vals):'',dm=text.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/),date='';if(dm)date=`${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;let lower=text.toLowerCase(),cat='';if(/fuel|petrol|diesel|garage|engen|shell|bp\b/.test(lower))cat='Brandstof';else if(/restaurant|cafe|coffee|food/.test(lower))cat='Etes';else if(/stationery|office/.test(lower))cat='Kantoor';return{supplier,amount,date,cat}}
+async function runOCR(){let f=$('#scanFile').files[0];if(!f)return toast('Kies eers ’n strokie.');$('#ocrStatus').textContent='Ek lees die strokie...';try{await loadOCR();let {data}=await Tesseract.recognize(f,'eng',{logger:m=>{if(m.progress)$('#ocrStatus').textContent=`Ek lees die strokie... ${Math.round(m.progress*100)}%`}}),g=parseOCR(data.text);if(g.supplier)$('#scanSupplier').value=g.supplier;if(g.amount)$('#scanAmount').value=g.amount;if(g.date)$('#scanDate').value=g.date;if(g.cat)$('#scanCategory').value=g.cat;$('#ocrStatus').textContent='Klaar — kyk net gou of die besonderhede reg lyk.'}catch(e){$('#ocrStatus').textContent='Ek kon nie die strokie outomaties lees nie. Jy kan die velde handmatig invul.'}}
+async function saveScan(e){e.preventDefault();let f=$('#scanFile').files[0];if(!f)return;let meta={supplier:$('#scanSupplier').value,date:$('#scanDate').value||dateForMonth(currentMonth),amount:Number($('#scanAmount').value||0),category:$('#scanCategory').value},rid=await saveReceipt(f,meta),t={id:uid(),accountId:current.id,type:'expense',date:meta.date,party:meta.supplier,purpose:'Strokie geskandeer',category:meta.category,classification:'Vir die besigheid',amount:meta.amount,status:'Betaal',method:'Ander',receiptId:rid,note:''};await put('transactions',t);scanDialog.close();toast('Strokie en uitgawe is gestoor.');if(!$('#monthView').classList.contains('hidden'))await renderMonth();else await renderDashboard()}
+async function saveBank(){let m=await monthMeta(currentMonth);m.bankChecked=$('#bankChecked').checked;await put('months',m);await renderMonth()}
+function openSettings(){$('#settingsBusiness').value=current.business;$('#settingsSars').value=(current.sarsRate*100).toFixed(1);$('#settingsGiving').value=(current.givingRate*100).toFixed(1);$('#settingsSetAside').value=current.setAside||0;settingsDialog.showModal()}
+async function saveSettings(e){e.preventDefault();current.business=$('#settingsBusiness').value.trim()||current.business;current.sarsRate=Number($('#settingsSars').value||0)/100;current.givingRate=Number($('#settingsGiving').value||0)/100;current.setAside=Number($('#settingsSetAside').value||0);await put('accounts',current);$('#businessLabel').textContent=current.business;$('#welcomeTitle').textContent=`Welkom terug, ${current.business}`;settingsDialog.close();await renderDashboard();toast('Instellings gestoor.')}
+async function exportData(){let tx=await byAccount('transactions'),m=await byAccount('months');let data={version:2,style:'friendly',exportedAt:new Date().toISOString(),business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,setAside:current.setAside},transactions:tx,months:m};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${current.business.replace(/\W+/g,'-')}-BizSnapshot-backup.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function init(){db=await openDB();initYears();$('#tabLogin').onclick=()=>showTab(true);$('#tabRegister').onclick=()=>showTab(false);$('#loginForm').onsubmit=login;$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#exportBtn').onclick=exportData;$('#logoutBtn').onclick=()=>{localStorage.removeItem('bizFriendlySession');location.reload()};await restore()}
+init();
+</script>
+</body>
+</html>
