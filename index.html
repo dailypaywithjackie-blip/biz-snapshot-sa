@@ -228,8 +228,8 @@ dialog{border:0;border-radius:24px;width:min(760px,94vw);padding:0;box-shadow:0 
 <dialog id="moveDialog"><div class="dialog-body">
   <div class="dialog-head"><h3 id="moveTitle">Backup / Skuif na ’n ander toestel</h3><button type="button" class="close" data-close="moveDialog">×</button></div>
   <div class="device-trust"><strong id="moveImportant">Belangrik: dit is ’n oordrag, nie live sync nie.</strong><p id="moveExplain">Maak eers ’n backup op jou huidige toestel. Open daarna Biz Snapshot op jou ander toestel en kies Restore. Gebruik verkieslik een toestel as jou hoof-toestel.</p></div>
-  <div class="guide-card"><strong id="moveStep1">1. Op jou huidige toestel</strong><p id="moveStep1Text">Kies Download my Backup. Dit sluit jou besigheidsinstellings, transaksies, maandkontroles en gestoorde strokies in.</p></div>
-  <div class="guide-card"><strong id="moveStep2">2. Op jou ander toestel</strong><p id="moveStep2Text">Open Biz Snapshot daar, skep/open die plaaslike besigheid en kies Restore on this Device. Kies dan jou backup-lêer.</p></div>
+  <div class="guide-card"><strong id="moveStep1">1. Op jou huidige toestel</strong><p id="moveStep1Text">Kies Download my Backup. Die bevestiging wys hoeveel data ingesluit is. Stuur die backup as ’n FILE/DOCUMENT — moenie Copy Link gebruik nie.</p></div>
+  <div class="guide-card"><strong id="moveStep2">2. Op jou ander toestel</strong><p id="moveStep2Text">Open Biz Snapshot op die ander toestel en kies Restore op die openingskerm. Kies die werklike .json backup-lêer; jy hoef nie eers ’n nuwe besigheid te skep nie.</p></div>
   <div class="device-actions"><button id="moveBackupBtn" class="btn btn-primary" type="button">Download my Backup</button><button id="moveRestoreBtn" class="btn btn-soft" type="button">Restore on this Device</button><input id="moveRestoreFile" type="file" accept=".json,application/json" class="hidden"></div>
 </div></dialog>
 
@@ -284,9 +284,9 @@ function updateDeviceUXTexts(){
   set('moveImportant','Belangrik: dit is ’n oordrag, nie live sync nie.','Important: this is a transfer, not live sync.');
   set('moveExplain','Maak eers ’n backup op jou huidige toestel. Open daarna Biz Snapshot op jou ander toestel en kies Restore. Gebruik verkieslik een toestel as jou hoof-toestel.','First create a backup on your current device. Then open Biz Snapshot on the other device and choose Restore. Preferably use one device as your main device.');
   set('moveStep1','1. Op jou huidige toestel','1. On your current device');
-  set('moveStep1Text','Kies Download my Backup. Dit sluit jou besigheidsinstellings, transaksies, maandkontroles en gestoorde strokies in.','Choose Download my Backup. It includes your business settings, transactions, month checks and saved receipts.');
+  set('moveStep1Text','Kies Download my Backup. Ná die download moet die bevestiging wys hoeveel transaksies, maandkontroles en strokies ingesluit is. As jy dit via WhatsApp/e-pos stuur, kies Share as File / Deel as lêer — MOENIE Copy Link of Share via Link gebruik nie.','Choose Download my Backup. After downloading, the confirmation shows how many transactions, month checks and receipts are included. If you send it by WhatsApp/email, choose Share as File — DO NOT use Copy Link or Share via Link.');
   set('moveStep2','2. Op jou ander toestel','2. On your other device');
-  set('moveStep2Text','Open Biz Snapshot daar, skep/open die plaaslike besigheid en kies Restore on this Device. Kies dan jou backup-lêer.','Open Biz Snapshot there, create/open the local business and choose Restore on this Device. Then select your backup file.');
+  set('moveStep2Text','Open Biz Snapshot op die ander toestel en kies Restore jou bestaande backup op die openingskerm. Kies die werklike .json backup-lêer. Jy hoef nie eers ’n nuwe besigheid te skep nie.','Open Biz Snapshot on the other device and choose Restore your existing backup on the opening screen. Select the actual .json backup file. You do not need to create a new business first.');
   set('moveBackupBtn','Download my Backup','Download my Backup'); set('moveRestoreBtn','Restore op hierdie toestel','Restore on this Device');
   set('installHelpTitle','Sit Biz Snapshot op jou Home Screen','Put Biz Snapshot on your Home Screen');
   set('installLocalTitle','Maklike toegang, dieselfde local-first beginsel','Easy access, same local-first principle');
@@ -301,7 +301,26 @@ function applyLang(){document.documentElement.lang=uiLang;$$('[data-i18n]').forE
 function renderTableHeads(){if(!$('#incomeHead'))return;$('#incomeHead').innerHTML=`<tr><th>${tr('date')}</th><th>${tr('clientSource')}</th><th>${tr('sold')}</th><th>${tr('gross')}</th><th>${tr('fees')}</th><th>${tr('received')}</th><th>${tr('status')}</th><th></th></tr>`;$('#expenseHead').innerHTML=`<tr><th>${tr('date')}</th><th>${tr('payee')}</th><th>${tr('purpose')}</th><th>${tr('classification')}</th><th>${tr('amount')}</th><th>${tr('receipts')}</th><th></th></tr>`}
 function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB,VER);r.onupgradeneeded=()=>{let d=r.result;if(!d.objectStoreNames.contains('accounts'))d.createObjectStore('accounts',{keyPath:'id'});if(!d.objectStoreNames.contains('transactions')){let s=d.createObjectStore('transactions',{keyPath:'id'});s.createIndex('accountId','accountId')}if(!d.objectStoreNames.contains('receipts')){let s=d.createObjectStore('receipts',{keyPath:'id'});s.createIndex('accountId','accountId')}if(!d.objectStoreNames.contains('months')){let s=d.createObjectStore('months',{keyPath:'id'});s.createIndex('accountId','accountId')}};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 function st(n,m='readonly'){return db.transaction(n,m).objectStore(n)}function rq(r){return new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-async function put(n,o){return rq(st(n,'readwrite').put(o))}async function del(n,id){return rq(st(n,'readwrite').delete(id))}async function all(n){return rq(st(n).getAll())}async function byAccount(n){return rq(st(n).index('accountId').getAll(current.id))}
+async function put(n,o){return rq(st(n,'readwrite').put(o))}async function del(n,id){return rq(st(n,'readwrite').delete(id))}async function all(n){return rq(st(n).getAll())}
+async function byAccount(n){
+  let exact=await rq(st(n).index('accountId').getAll(current.id));
+  let everything=await all(n);
+  let accounts=await all('accounts');
+
+  // Normal case: records already belong to the current account.
+  // Legacy recovery: older preview builds could leave records under a previous accountId.
+  // Only adopt those records automatically when this browser contains one business,
+  // so data from two businesses can never be mixed.
+  if(accounts.length===1){
+    let merged=new Map();
+    for(let x of [...exact,...everything]){
+      if(!x || !x.id) continue;
+      merged.set(x.id,x);
+    }
+    return [...merged.values()];
+  }
+  return exact;
+}
 async function hash(s){let b=new TextEncoder().encode(s),h=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function accountByName(n){let a=await all('accounts');return a.find(x=>x.business.toLowerCase()===n.trim().toLowerCase())}
 function showTab(login){$('#loginForm').classList.toggle('hidden',!login);$('#registerForm').classList.toggle('hidden',login);$('#tabLogin').classList.toggle('active',login);$('#tabRegister').classList.toggle('active',!login)}
@@ -411,25 +430,29 @@ async function backupData(){
   try{
     let tx=await byAccount('transactions'),m=await byAccount('months'),rs=await byAccount('receipts'),receipts=[];
     for(let r of rs){
-      let copy={...r,blob:undefined};
+      let copy={...r,accountId:current.id,blob:undefined};
       if(r.blob) copy.blobData=await blobToDataURL(r.blob);
       receipts.push(copy);
     }
-    let data={version:5,product:'Biz Snapshot SA',exportedAt:new Date().toISOString(),business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{}},transactions:tx,months:m,receipts};
+    tx=tx.map(x=>({...x,accountId:current.id}));
+    m=m.map(x=>({...x,accountId:current.id}));
+
+    let data={version:6,product:'Biz Snapshot SA',exportedAt:new Date().toISOString(),
+      business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{}},
+      transactions:tx,months:m,receipts};
+
     let json=JSON.stringify(data,null,2);
     if(!json || json.length<50) throw new Error('Backup data is empty');
     let name=`${safeName(current.business)}-BizSnapshot-backup.json`;
     let blob=new Blob([json],{type:'application/json;charset=utf-8'});
     if(!blob.size) throw new Error('Backup file is empty');
 
-    /* Use a normal browser download for backups on every device.
-       This avoids Android/WPS file-provider combinations that can create a 0-byte file. */
     downloadBlob(blob,name);
 
-    let kb=Math.max(1,Math.ceil(blob.size/1024));
+    let mb=blob.size>=1024*1024?(blob.size/1024/1024).toFixed(1)+' MB':Math.max(1,Math.ceil(blob.size/1024))+' KB';
     setTimeout(()=>alert(uiLang==='af'
-      ? `Backup klaar. Die lêer bevat ${kb} KB data.\n\nSoek ${name} in Downloads. Maak seker die lêer wys NIE 0 B nie voordat jy dit na 'n ander toestel skuif.`
-      : `Backup complete. The file contains ${kb} KB of data.\n\nFind ${name} in Downloads. Make sure the file does NOT show 0 B before moving it to another device.`),150);
+      ? `Backup klaar.\n\nHierdie backup bevat:\n• ${tx.length} transaksie(s)\n• ${m.length} maandkontrole(s)\n• ${receipts.length} gestoorde strokie(s)\n• Lêergrootte: ${mb}\n\nBELANGRIK: As jy die backup na WhatsApp/e-pos stuur, kies Share as File / Deel as lêer. Moenie Copy Link of Share via Link gebruik nie.\n\nMaak seker die afgelaaide lêer wys NIE 0 B nie.`
+      : `Backup complete.\n\nThis backup contains:\n• ${tx.length} transaction(s)\n• ${m.length} month check(s)\n• ${receipts.length} saved receipt(s)\n• File size: ${mb}\n\nIMPORTANT: If you send the backup by WhatsApp/email, choose Share as File. Do not use Copy Link or Share via Link.\n\nMake sure the downloaded file does NOT show 0 B.`),150);
     toast(tr('backupDone'));
   }catch(e){
     console.error('Backup failed',e);
