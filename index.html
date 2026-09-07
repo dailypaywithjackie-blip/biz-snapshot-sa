@@ -112,7 +112,16 @@ dialog{border:0;border-radius:24px;width:min(760px,94vw);padding:0;box-shadow:0 
   <div class="top-actions">
     <select id="yearSelect" class="year"></select>
     <button id="reportBtn" class="btn btn-soft secondary-mobile" data-i18n="reports">Verslae</button>
-    <button id="moveDeviceBtn" class="btn btn-soft" type="button"><span class="device-nav-label" id="moveDeviceLabel">Skuif toestel</span></button>
+    <button id="moveDeviceBtn" class="btn btn-soft" type="button"><span class="device-nav-label" id="moveDeviceLabel">Werk op ’n ander toestel</span><div class="transfer-simple-guide" style="margin:14px 0;padding:14px;border:1px solid #d7dce2;border-radius:12px">
+<strong>Werk op ’n ander toestel — 3 maklike stappe</strong>
+<ol style="margin:10px 0 0 20px">
+<li>Op jou huidige toestel: druk <strong>Maak my transfer-lêer</strong>.</li>
+<li>Stuur die <strong>lêer self</strong> na jou ander toestel met WhatsApp, e-pos, AirDrop of Quick Share. <strong>Moenie Copy Link / Share Link gebruik nie.</strong></li>
+<li>Op die ander toestel: maak Biz Snapshot oop, kies <strong>Bring my data van my ander toestel</strong>, en kies die transfer-lêer.</li>
+</ol>
+<p style="margin:10px 0 0"><strong>Belangrik:</strong> Moenie data op jou ou toestel uitvee voordat Biz Snapshot op die nuwe toestel bevestig dat alles oorgekom het nie.</p>
+<p style="margin:8px 0 0">Dit is ’n toestel-oordrag, nie live sync nie. As jy daarna op albei toestelle veranderings maak, sal hulle nie outomaties saam update nie.</p>
+</div></button>
     <button id="installHelpBtn" class="btn btn-soft" type="button"><span class="device-nav-label" id="homeScreenLabel">Home Screen</span></button>
     <button id="installBtn" class="btn btn-soft hidden" data-i18n="install">Installeer</button>
     <button id="settingsBtn" class="btn btn-soft" data-i18n="settings">Instellings</button>
@@ -228,9 +237,9 @@ dialog{border:0;border-radius:24px;width:min(760px,94vw);padding:0;box-shadow:0 
 <dialog id="moveDialog"><div class="dialog-body">
   <div class="dialog-head"><h3 id="moveTitle">Backup / Skuif na ’n ander toestel</h3><button type="button" class="close" data-close="moveDialog">×</button></div>
   <div class="device-trust"><strong id="moveImportant">Belangrik: dit is ’n oordrag, nie live sync nie.</strong><p id="moveExplain">Maak eers ’n backup op jou huidige toestel. Open daarna Biz Snapshot op jou ander toestel en kies Restore. Gebruik verkieslik een toestel as jou hoof-toestel.</p></div>
-  <div class="guide-card"><strong id="moveStep1">1. Op jou huidige toestel</strong><p id="moveStep1Text">Kies Download my Backup. Die bevestiging wys hoeveel data ingesluit is. Stuur die backup as ’n FILE/DOCUMENT — moenie Copy Link gebruik nie.</p></div>
+  <div class="guide-card"><strong id="moveStep1">1. Op jou huidige toestel</strong><p id="moveStep1Text">Kies Maak my transfer-lêer. Die bevestiging wys hoeveel data ingesluit is. Stuur die backup as ’n FILE/DOCUMENT — moenie Copy Link gebruik nie.</p></div>
   <div class="guide-card"><strong id="moveStep2">2. Op jou ander toestel</strong><p id="moveStep2Text">Open Biz Snapshot op die ander toestel en kies Restore op die openingskerm. Kies die werklike .json backup-lêer; jy hoef nie eers ’n nuwe besigheid te skep nie.</p></div>
-  <div class="device-actions"><button id="moveBackupBtn" class="btn btn-primary" type="button">Download my Backup</button><button id="moveRestoreBtn" class="btn btn-soft" type="button">Restore on this Device</button><input id="moveRestoreFile" type="file" accept=".json,application/json" class="hidden"></div>
+  <div class="device-actions"><button id="moveBackupBtn" class="btn btn-primary" type="button">Maak my transfer-lêer</button><button id="moveRestoreBtn" class="btn btn-soft" type="button">Restore on this Device</button><input id="moveRestoreFile" type="file" accept=".json,application/json" class="hidden"></div>
 </div></dialog>
 
 <dialog id="installHelpDialog"><div class="dialog-body">
@@ -278,16 +287,16 @@ function updateDeviceUXTexts(){
   set('loginDeviceHelp','Hierdie maak net ’n besigheid oop wat reeds in hierdie browser/toestel gestoor is. Het jy op ’n ander browser of toestel begin? Gebruik Restore hier bo.','This only opens a business already stored in this browser/device. Started in another browser or device? Use Restore above.');
   set('localDataAckText','Ek verstaan dat my Biz Snapshot-data op hierdie toestel/browser gestoor word en nie outomaties met my ander toestelle sync nie.','I understand that my Biz Snapshot data is stored on this device/browser and does not automatically sync with my other devices.');
   set('localPricingNote','Eenmalige aankoop. Geen maandelikse Biz Snapshot-intekening of betaalde credits nie.','One-time purchase. No monthly Biz Snapshot subscription or paid credits.');
-  set('moveDeviceLabel','Skuif toestel','Move device'); set('homeScreenLabel','Home Screen','Home Screen');
+  set('moveDeviceLabel','Werk op ’n ander toestel','Move device'); set('homeScreenLabel','Home Screen','Home Screen');
   set('settingsLocalNotice','Jou data is plaaslik op hierdie toestel. Gebruik Backup / Skuif na ’n ander toestel voordat jy van browser of toestel verander.','Your data is stored locally on this device. Use Backup / Move to another device before changing browser or device.');
   set('moveTitle','Backup / Skuif na ’n ander toestel','Backup / Move to another device');
   set('moveImportant','Belangrik: dit is ’n oordrag, nie live sync nie.','Important: this is a transfer, not live sync.');
   set('moveExplain','Maak eers ’n backup op jou huidige toestel. Open daarna Biz Snapshot op jou ander toestel en kies Restore. Gebruik verkieslik een toestel as jou hoof-toestel.','First create a backup on your current device. Then open Biz Snapshot on the other device and choose Restore. Preferably use one device as your main device.');
   set('moveStep1','1. Op jou huidige toestel','1. On your current device');
-  set('moveStep1Text','Kies Download my Backup. Ná die download moet die bevestiging wys hoeveel transaksies, maandkontroles en strokies ingesluit is. As jy dit via WhatsApp/e-pos stuur, kies Share as File / Deel as lêer — MOENIE Copy Link of Share via Link gebruik nie.','Choose Download my Backup. After downloading, the confirmation shows how many transactions, month checks and receipts are included. If you send it by WhatsApp/email, choose Share as File — DO NOT use Copy Link or Share via Link.');
+  set('moveStep1Text','Kies Maak my transfer-lêer. Ná die download moet die bevestiging wys hoeveel transaksies, maandkontroles en strokies ingesluit is. As jy dit via WhatsApp/e-pos stuur, kies Share as File / Deel as lêer — MOENIE Copy Link of Share via Link gebruik nie.','Choose Maak my transfer-lêer. After downloading, the confirmation shows how many transactions, month checks and receipts are included. If you send it by WhatsApp/email, choose Share as File — DO NOT use Copy Link or Share via Link.');
   set('moveStep2','2. Op jou ander toestel','2. On your other device');
   set('moveStep2Text','Open Biz Snapshot op die ander toestel en kies Restore jou bestaande backup op die openingskerm. Kies die werklike .json backup-lêer. Jy hoef nie eers ’n nuwe besigheid te skep nie.','Open Biz Snapshot on the other device and choose Restore your existing backup on the opening screen. Select the actual .json backup file. You do not need to create a new business first.');
-  set('moveBackupBtn','Download my Backup','Download my Backup'); set('moveRestoreBtn','Restore op hierdie toestel','Restore on this Device');
+  set('moveBackupBtn','Maak my transfer-lêer','Maak my transfer-lêer'); set('moveRestoreBtn','Bring my data van my ander toestel','Restore on this Device');
   set('installHelpTitle','Sit Biz Snapshot op jou Home Screen','Put Biz Snapshot on your Home Screen');
   set('installLocalTitle','Maklike toegang, dieselfde local-first beginsel','Easy access, same local-first principle');
   set('installLocalText','Die Home Screen-ikoon verander nie Biz Snapshot in ’n cloud account nie. Jou data bly gekoppel aan hierdie toestel/browser-omgewing.','The Home Screen icon does not turn Biz Snapshot into a cloud account. Your data remains tied to this device/browser environment.');
