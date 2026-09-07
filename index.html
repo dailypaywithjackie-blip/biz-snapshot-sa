@@ -138,6 +138,35 @@ h2{font-size:clamp(22px,7vw,30px)!important}
 }
 </style>
 
+
+<style id="v8-mobile-header-fix">
+@media (max-width: 760px) {
+  /* Keep the top controls readable and tappable on phones. */
+  header .topbar, header .header-actions, .topbar, .header-actions, .nav-actions {
+    overflow: visible !important;
+  }
+
+  /* The existing desktop nav container becomes a clean 2-column phone grid. */
+  .top-actions, .nav-buttons, .header-buttons, .actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .top-actions button, .nav-buttons button, .header-buttons button, .actions button,
+  header button {
+    min-width: 0 !important;
+    width: 100% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="toast" class="toast"></div><div style="position:fixed;right:10px;bottom:10px;z-index:9999;background:#26332d;color:white;padding:7px 10px;border-radius:999px;font:700 11px system-ui;opacity:.82">FINAL PREVIEW</div>
@@ -717,7 +746,51 @@ async function printReport(){
         <th>${tr('status')}</th><th>${tr('classification')}</th>
       </tr></thead><tbody>${rows}</tbody></table>
     </section>
-  </body></html>`);
+  
+<script id="v8-mobile-nav-fix">
+document.addEventListener('DOMContentLoaded', function () {
+  const wanted = ['Verslae','Skuif toestel','Instellings','Uit'];
+  const buttons = Array.from(document.querySelectorAll('button, a'));
+  const matches = buttons.filter(el => wanted.includes((el.textContent || '').trim()));
+  if (matches.length >= 3) {
+    let p = matches[0].parentElement;
+    while (p && p !== document.body) {
+      const labels = Array.from(p.querySelectorAll('button, a')).map(el => (el.textContent || '').trim());
+      if (wanted.filter(x => labels.includes(x)).length >= 3) {
+        p.classList.add('v8-phone-nav');
+        break;
+      }
+      p = p.parentElement;
+    }
+  }
+});
+</script>
+<style>
+@media (max-width:760px){
+  .v8-phone-nav{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+    width:100% !important;
+  }
+  .v8-phone-nav > button,.v8-phone-nav > a{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-width:0 !important;
+    width:100% !important;
+    min-height:52px !important;
+    padding:12px 8px !important;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    font-size:16px !important;
+    line-height:1.15 !important;
+  }
+}
+</style>
+
+</body></html>`);
   doc.close();
   frame.onload=()=>{setTimeout(()=>{frame.contentWindow.focus();frame.contentWindow.print()},80)};
   setTimeout(()=>{try{frame.contentWindow.focus();frame.contentWindow.print()}catch(e){}},180);
