@@ -78,11 +78,13 @@ dialog{border:0;border-radius:24px;width:min(760px,94vw);padding:0;box-shadow:0 
       <strong id="deviceTrustTitle">Jou data bly privaat op hierdie toestel</strong>
       <p id="deviceTrustText">Biz Snapshot sync nie jou finansiële data outomaties tussen toestelle nie. Wil jy later op ’n laptop werk? Gebruik Backup / Skuif na ’n ander toestel.</p>
     </div>
+    <button id="firstRestoreBtn" class="btn btn-soft full" type="button" style="margin:0 0 14px"><span id="firstRestoreText">Het jy reeds Biz Snapshot gebruik? Restore jou bestaande backup hier</span></button>
+    <input id="firstRestoreFile" type="file" accept=".json,application/json" class="hidden">
     <div class="tabs"><button id="tabLogin" class="tab active" type="button" data-i18n="login">Teken in</button><button id="tabRegister" class="tab" type="button" data-i18n="newBusiness">Nuwe besigheid</button></div>
     <form id="loginForm">
       <label><span data-i18n="businessName">Besigheidsnaam</span><input id="loginBusiness" required autocomplete="username"></label>
       <label><span data-i18n="password">Wagwoord</span><input id="loginPassword" type="password" required autocomplete="current-password"></label>
-      <button class="btn btn-primary full" data-i18n="login">Teken in</button>
+      <button class="btn btn-primary full" data-i18n="login">Teken in</button><p id="loginDeviceHelp" class="micro" style="margin-top:10px">Hierdie maak net ’n besigheid oop wat reeds in hierdie browser/toestel gestoor is. Het jy op ’n ander browser of toestel begin? Gebruik Restore hier bo.</p>
     </form>
     <form id="registerForm" class="hidden">
       <label><span data-i18n="businessName">Besigheidsnaam</span><input id="regBusiness" required></label>
@@ -272,6 +274,8 @@ function updateDeviceUXTexts(){
   const set=(id,a,e)=>{let x=document.getElementById(id);if(x)x.textContent=af?a:e};
   set('deviceTrustTitle','Jou data bly privaat op hierdie toestel','Your data stays private on this device');
   set('deviceTrustText','Biz Snapshot sync nie jou finansiële data outomaties tussen toestelle nie. Wil jy later op ’n laptop werk? Gebruik Backup / Skuif na ’n ander toestel.','Biz Snapshot does not automatically sync your financial data between devices. Want to work on a laptop later? Use Backup / Move to another device.');
+  set('firstRestoreText','Het jy reeds Biz Snapshot gebruik? Restore jou bestaande backup hier','Already used Biz Snapshot? Restore your existing backup here');
+  set('loginDeviceHelp','Hierdie maak net ’n besigheid oop wat reeds in hierdie browser/toestel gestoor is. Het jy op ’n ander browser of toestel begin? Gebruik Restore hier bo.','This only opens a business already stored in this browser/device. Started in another browser or device? Use Restore above.');
   set('localDataAckText','Ek verstaan dat my Biz Snapshot-data op hierdie toestel/browser gestoor word en nie outomaties met my ander toestelle sync nie.','I understand that my Biz Snapshot data is stored on this device/browser and does not automatically sync with my other devices.');
   set('localPricingNote','Eenmalige aankoop. Geen maandelikse Biz Snapshot-intekening of betaalde credits nie.','One-time purchase. No monthly Biz Snapshot subscription or paid credits.');
   set('moveDeviceLabel','Skuif toestel','Move device'); set('homeScreenLabel','Home Screen','Home Screen');
@@ -302,7 +306,12 @@ async function hash(s){let b=new TextEncoder().encode(s),h=await crypto.subtle.d
 async function accountByName(n){let a=await all('accounts');return a.find(x=>x.business.toLowerCase()===n.trim().toLowerCase())}
 function showTab(login){$('#loginForm').classList.toggle('hidden',!login);$('#registerForm').classList.toggle('hidden',login);$('#tabLogin').classList.toggle('active',login);$('#tabRegister').classList.toggle('active',!login)}
 async function register(e){e.preventDefault();let business=$('#regBusiness').value.trim();if(await accountByName(business))return toast(uiLang==='af'?'Daardie besigheid bestaan reeds op hierdie toestel.':'That business already exists on this device.');current={id:uid(),business,passwordHash:await hash($('#regPassword').value),sarsRate:Number($('#regSars').value)/100,givingRate:Number($('#regGiving').value)/100,givingBasis:$('#regGivingBasis').value,language:$('#regLanguage').value,setAside:0};await put('accounts',current);localStorage.setItem('bizFriendlySession',current.id);openApp()}
-async function login(e){e.preventDefault();let a=await accountByName($('#loginBusiness').value);if(!a||a.passwordHash!==await hash($('#loginPassword').value))return toast(uiLang==='af'?'Besigheidsnaam of wagwoord is nie reg nie.':'Business name or password is incorrect.');current=a;normalizeAccount();await put('accounts',current);localStorage.setItem('bizFriendlySession',a.id);openApp()}
+async function login(e){
+ e.preventDefault();let a=await accountByName($('#loginBusiness').value);
+ if(!a){alert(uiLang==='af'?'Ons kry nie hierdie besigheid op hierdie toestel/browser nie.\n\nAs jy Biz Snapshot voorheen in ’n ander browser of op ’n ander toestel gebruik het, gebruik Restore Backup om jou besigheid hierheen te bring.\n\nJou Biz Snapshot-profiel en data sync nie outomaties tussen toestelle nie.':'We cannot find this business on this device/browser.\n\nIf you used Biz Snapshot before in another browser or on another device, use Restore Backup to bring your business here.\n\nYour Biz Snapshot profile and data do not automatically sync between devices.');return}
+ if(a.passwordHash!==await hash($('#loginPassword').value)){toast(uiLang==='af'?'Die wagwoord vir hierdie plaaslike besigheid is nie reg nie.':'The password for this local business is incorrect.');return}
+ current=a;normalizeAccount();await put('accounts',current);localStorage.setItem('bizFriendlySession',a.id);openApp()
+}
 function normalizeAccount(){current.language=current.language||'af';current.givingBasis=current.givingBasis||'profit';current.sarsRate=Number(current.sarsRate??.25);current.givingRate=Number(current.givingRate??.10);current.setAside=Number(current.setAside||0);current.setAsideByFY=current.setAsideByFY||{}}
 async function restoreSession(){let id=localStorage.getItem('bizFriendlySession');if(!id)return;let a=await rq(st('accounts').get(id));if(a){current=a;normalizeAccount();openApp()}}
 function openApp(){uiLang=current.language||'af';localStorage.setItem('bizUILang',uiLang);applyLang();$('#loginView').classList.add('hidden');$('#activationView').classList.add('hidden');$('#appView').classList.remove('hidden');initYears();renderDashboard()}
@@ -399,13 +408,35 @@ async function saveSettings(e){e.preventDefault();current.business=$('#settingsB
 function blobToDataURL(blob){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob)})}
 function dataURLtoBlob(s){let [head,b64]=s.split(','),type=(head.match(/data:(.*?);base64/)||[])[1]||'application/octet-stream',bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type})}
 async function backupData(){
-  let tx=await byAccount('transactions'),m=await byAccount('months'),rs=await byAccount('receipts'),receipts=[];
-  for(let r of rs)receipts.push({...r,blobData:await blobToDataURL(r.blob),blob:undefined});
-  let data={version:4,product:'Biz Snapshot SA',exportedAt:new Date().toISOString(),business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{}},transactions:tx,months:m,receipts};
-  let name=`${safeName(current.business)}-BizSnapshot-backup.json`,blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),handle=null;
-  if(window.showSaveFilePicker){try{handle=await showSaveFilePicker({suggestedName:name,types:[{description:'Biz Snapshot Backup',accept:{'application/json':['.json']}}]})}catch(e){if(e&&e.name==='AbortError')return}}
-  if(handle){let w=await handle.createWritable();await w.write(blob);await w.close()}else downloadBlob(blob,name);
-  toast(tr('backupDone'));
+  try{
+    let tx=await byAccount('transactions'),m=await byAccount('months'),rs=await byAccount('receipts'),receipts=[];
+    for(let r of rs){
+      let copy={...r,blob:undefined};
+      if(r.blob) copy.blobData=await blobToDataURL(r.blob);
+      receipts.push(copy);
+    }
+    let data={version:5,product:'Biz Snapshot SA',exportedAt:new Date().toISOString(),business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{}},transactions:tx,months:m,receipts};
+    let json=JSON.stringify(data,null,2);
+    if(!json || json.length<50) throw new Error('Backup data is empty');
+    let name=`${safeName(current.business)}-BizSnapshot-backup.json`;
+    let blob=new Blob([json],{type:'application/json;charset=utf-8'});
+    if(!blob.size) throw new Error('Backup file is empty');
+
+    /* Use a normal browser download for backups on every device.
+       This avoids Android/WPS file-provider combinations that can create a 0-byte file. */
+    downloadBlob(blob,name);
+
+    let kb=Math.max(1,Math.ceil(blob.size/1024));
+    setTimeout(()=>alert(uiLang==='af'
+      ? `Backup klaar. Die lêer bevat ${kb} KB data.\n\nSoek ${name} in Downloads. Maak seker die lêer wys NIE 0 B nie voordat jy dit na 'n ander toestel skuif.`
+      : `Backup complete. The file contains ${kb} KB of data.\n\nFind ${name} in Downloads. Make sure the file does NOT show 0 B before moving it to another device.`),150);
+    toast(tr('backupDone'));
+  }catch(e){
+    console.error('Backup failed',e);
+    alert(uiLang==='af'
+      ? 'Die backup kon nie korrek geskep word nie. Jou data is nog veilig op hierdie toestel. Probeer asseblief weer.'
+      : 'The backup could not be created correctly. Your data is still safe on this device. Please try again.');
+  }
 }
 async function deleteByAccount(store){let items=await byAccount(store);for(let x of items)await del(store,x.id)}
 async function restoreData(file){try{let data=JSON.parse(await file.text());if(!data||!Array.isArray(data.transactions))throw 0;if(!confirm(tr('restoreConfirm')))return;for(let n of ['transactions','months','receipts'])await deleteByAccount(n);for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});for(let m of (data.months||[]))await put('months',{...m,accountId:current.id});for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}if(data.business){Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{}});await put('accounts',current);uiLang=current.language;applyLang()}if(settingsDialog.open)settingsDialog.close();if(moveDialog.open)moveDialog.close();await renderDashboard();toast(tr('restoreDone'))}catch(e){console.error(e);toast(tr('badBackup'))}}
@@ -426,7 +457,67 @@ async function downloadCSV(){
 }
 async function printReport(){
   let r=await reportData();
-  let rows=r.tx.map(t=>`<tr><td>${esc(t.date)}</td><td>${t.type==='income'?tr('moneyIn'):tr('moneyOut')}</td><td>${esc(t.party)}</td><td>${esc(t.purpose)}</td><td>${esc(t.category||'')}</td><td>${t.type==='income'?money(t.gross):money(t.amount)}</td><td>${esc(statusLabel(t.status))}</td><td>${t.type==='expense'?esc(classLabel(t.classification)):''}</td></tr>`).join('');
+
+  const isAf = uiLang==='af';
+  const fiscalMonths = [
+    {n:3, af:'Mrt', en:'Mar'}, {n:4, af:'Apr', en:'Apr'}, {n:5, af:'Mei', en:'May'},
+    {n:6, af:'Jun', en:'Jun'}, {n:7, af:'Jul', en:'Jul'}, {n:8, af:'Aug', en:'Aug'},
+    {n:9, af:'Sep', en:'Sep'}, {n:10, af:'Okt', en:'Oct'}, {n:11, af:'Nov', en:'Nov'},
+    {n:12, af:'Des', en:'Dec'}, {n:1, af:'Jan', en:'Jan'}, {n:2, af:'Feb', en:'Feb'}
+  ];
+
+  const monthOf = t => {
+    let s=String(t.date||'');
+    let mm=Number(s.slice(5,7));
+    return Number.isFinite(mm) ? mm : 0;
+  };
+
+  function categoryMatrix(classification){
+    let map = new Map();
+    for(let t of r.tx){
+      if(t.type!=='expense' || t.classification!==classification) continue;
+      let cat=String(t.category||'').trim() || (isAf?'Ander':'Other');
+      if(!map.has(cat)) map.set(cat,{cat,total:0,months:Object.fromEntries(fiscalMonths.map(x=>[x.n,0]))});
+      let row=map.get(cat), val=Number(t.amount||0);
+      row.total += val;
+      let mm=monthOf(t);
+      if(mm && row.months[mm]!==undefined) row.months[mm]+=val;
+    }
+    return [...map.values()].sort((a,b)=>b.total-a.total);
+  }
+
+  function matrixHTML(items, title, emptyText){
+    let monthHeads=fiscalMonths.map(x=>`<th class="num">${isAf?x.af:x.en}</th>`).join('');
+    if(!items.length){
+      return `<section class="section"><h2>${esc(title)}</h2><div class="empty">${esc(emptyText)}</div></section>`;
+    }
+    let rows=items.map(x=>`<tr>
+      <td>${esc(x.cat)}</td>
+      ${fiscalMonths.map(m=>`<td class="num">${money(x.months[m.n]||0)}</td>`).join('')}
+      <td class="num total">${money(x.total)}</td>
+    </tr>`).join('');
+    let grandMonths=fiscalMonths.map(m=>items.reduce((s,x)=>s+(x.months[m.n]||0),0));
+    let grandTotal=items.reduce((s,x)=>s+x.total,0);
+    rows+=`<tr class="grand"><td>${isAf?'TOTAAL':'TOTAL'}</td>${grandMonths.map(v=>`<td class="num">${money(v)}</td>`).join('')}<td class="num">${money(grandTotal)}</td></tr>`;
+    return `<section class="section"><h2>${esc(title)}</h2>
+      <div class="table-wrap"><table class="matrix"><thead><tr><th>${isAf?'Kategorie':'Category'}</th>${monthHeads}<th class="num">${isAf?'FY Totaal':'FY Total'}</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </section>`;
+  }
+
+  let businessCats=categoryMatrix('business');
+  let personalCats=categoryMatrix('personal');
+
+  let rows=r.tx.map(t=>`<tr>
+    <td>${esc(t.date)}</td>
+    <td>${t.type==='income'?tr('moneyIn'):tr('moneyOut')}</td>
+    <td>${esc(t.party)}</td>
+    <td>${esc(t.purpose)}</td>
+    <td>${esc(t.category||'')}</td>
+    <td class="num">${t.type==='income'?money(t.gross):money(t.amount)}</td>
+    <td>${esc(statusLabel(t.status))}</td>
+    <td>${t.type==='expense'?esc(classLabel(t.classification)):''}</td>
+  </tr>`).join('');
+
   let frame=document.getElementById('reportPrintFrame');
   if(!frame){
     frame=document.createElement('iframe');
@@ -442,19 +533,43 @@ async function printReport(){
     frame.style.pointerEvents='none';
     document.body.appendChild(frame);
   }
+
   let doc=frame.contentDocument||frame.contentWindow.document;
   doc.open();
   doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${tr('reportTitle')}</title><style>
-    body{font-family:Arial,sans-serif;color:#222;padding:28px}
-    h1{margin-bottom:4px}.muted{color:#666}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
-    .s{border:1px solid #ddd;padding:12px;border-radius:8px}.s b{display:block;font-size:18px;margin-top:6px}
-    table{width:100%;border-collapse:collapse;font-size:11px}
-    th,td{padding:7px;border-bottom:1px solid #ddd;text-align:left}th{background:#f4f4f4}
-    .note{margin-top:18px;font-size:10px;color:#666}
+    @page{size:landscape;margin:12mm}
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;color:#222;padding:8px;margin:0}
+    h1{margin:0 0 4px;font-size:24px}
+    h2{font-size:16px;margin:22px 0 8px}
+    .muted{color:#666;font-size:12px}
+    .report-title{font-size:13px;font-weight:700;margin-top:3px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+    .s{border:1px solid #ddd;padding:10px;border-radius:8px;break-inside:avoid}
+    .s b{display:block;font-size:17px;margin-top:5px}
+    .section{break-inside:auto;margin-top:16px}
+    .table-wrap{width:100%;overflow:visible}
+    table{width:100%;border-collapse:collapse;font-size:9px}
+    th,td{padding:5px 4px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
+    th{background:#f3f3f3;font-weight:700}
+    td.num,th.num{text-align:right;white-space:nowrap}
+    .matrix td:first-child,.matrix th:first-child{min-width:115px}
+    .matrix .total{font-weight:700}
+    .grand td{font-weight:700;border-top:2px solid #999;background:#fafafa}
+    .note{margin-top:18px;font-size:10px;color:#666;line-height:1.45}
+    .empty{padding:10px;border:1px dashed #ccc;color:#666;font-size:11px}
+    .details{page-break-before:always}
+    .details table{font-size:9px}
+    @media print{
+      body{padding:0}
+      .section{break-inside:auto}
+      tr{break-inside:avoid}
+    }
   </style></head><body>
     <h1>${esc(current.business)}</h1>
-    <div class="muted">${tr('financialYear')}: ${fy()}/${fy()+1}</div>
+    <div class="report-title">${isAf?'Finansiële Jaar Opsomming':'Financial Year Summary'}</div>
+    <div class="muted">${tr('financialYear')}: ${fy()}/${fy()+1} · ${isAf?'Maart':'March'} ${fy()} – ${isAf?'Februarie':'February'} ${fy()+1}</div>
+
     <div class="stats">
       <div class="s">${tr('moneyIn')}<b>${money(r.inc)}</b></div>
       <div class="s">${tr('businessOut')}<b>${money(r.out)}</b></div>
@@ -463,8 +578,35 @@ async function printReport(){
       <div class="s">${tr('sarsEstimate')}<b>${money(r.sars)}</b></div>
       <div class="s">${tr('givingLabel')}<b>${money(r.giving)}</b></div>
     </div>
-    <table><thead><tr><th>${tr('date')}</th><th>Type</th><th>${tr('clientSource')} / ${tr('payee')}</th><th>${tr('purpose')}</th><th>${tr('category')}</th><th>${tr('amount')}</th><th>${tr('status')}</th><th>${tr('classification')}</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="note">${tr('personalNote')}<br>${tr('sarsDisclaimer')}</div>
+
+    ${matrixHTML(
+      businessCats,
+      isAf?'Besigheidsuitgawes per Kategorie':'Business Expenses by Category',
+      isAf?'Geen besigheidsuitgawes vir hierdie finansiële jaar nie.':'No business expenses for this financial year.'
+    )}
+
+    ${matrixHTML(
+      personalCats,
+      isAf?'Persoonlike Uitgawes per Kategorie':'Personal Expenses by Category',
+      isAf?'Geen persoonlike uitgawes vir hierdie finansiële jaar nie.':'No personal expenses for this financial year.'
+    )}
+
+    <div class="note">
+      ${isAf
+        ? 'Persoonlike uitgawes word slegs vir sigbaarheid gewys en word nie by besigheidswins of SARS-beplanningsberekeninge ingesluit nie.'
+        : 'Personal expenses are shown for visibility only and are excluded from business profit and SARS planning calculations.'}
+      <br>${tr('sarsDisclaimer')}
+    </div>
+
+    <section class="section details">
+      <h2>${isAf?'Gedetailleerde Transaksies':'Detailed Transactions'}</h2>
+      <table><thead><tr>
+        <th>${tr('date')}</th><th>${isAf?'Tipe':'Type'}</th>
+        <th>${tr('clientSource')} / ${tr('payee')}</th><th>${tr('purpose')}</th>
+        <th>${tr('category')}</th><th class="num">${tr('amount')}</th>
+        <th>${tr('status')}</th><th>${tr('classification')}</th>
+      </tr></thead><tbody>${rows}</tbody></table>
+    </section>
   </body></html>`);
   doc.close();
   frame.onload=()=>{setTimeout(()=>{frame.contentWindow.focus();frame.contentWindow.print()},80)};
@@ -546,7 +688,32 @@ async function verifyLicense(token){try{let [p,s]=token.trim().split('.');if(!p|
 async function gate(){showLogin()}
 function showLogin(){$('#activationView').classList.add('hidden');$('#loginView').classList.remove('hidden');applyLang()}
 async function activate(){let tok=$('#licenseInput').value.trim();if(await verifyLicense(tok)){localStorage.setItem('bizSnapshotLicense',tok);toast(tr('activationGood'));showLogin();await restoreSession()}else toast(tr('activationBad'))}
-async function init(){db=await openDB();applyLang();$('#tabLogin').onclick=()=>showTab(true);$('#tabRegister').onclick=()=>showTab(false);$('#loginLang').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#regLanguage').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#loginForm').onsubmit=login;$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();
+
+async function restoreFromFirstScreen(file){
+ try{
+  let data=JSON.parse(await file.text());if(!data||!data.business||!Array.isArray(data.transactions))throw 0;
+  let business=(data.business.business||'').trim();if(!business)throw 0;
+  let existing=await accountByName(business);
+  if(existing){current=existing;normalizeAccount()}
+  else{
+   let pw=prompt(uiLang==='af'?'Skep ’n plaaslike wagwoord vir hierdie besigheid op hierdie toestel (minimum 6 karakters):':'Create a local password for this business on this device (minimum 6 characters):');
+   if(pw===null)return;if(pw.length<6){toast(uiLang==='af'?'Gebruik asseblief minstens 6 karakters.':'Please use at least 6 characters.');return}
+   current={id:uid(),business,passwordHash:await hash(pw),sarsRate:Number(data.business.sarsRate??.25),givingRate:Number(data.business.givingRate??.10),givingBasis:data.business.givingBasis||'profit',language:data.business.language||uiLang,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||{}};
+   await put('accounts',current)
+  }
+  localStorage.setItem('bizFriendlySession',current.id);
+  for(let n of ['transactions','months','receipts'])await deleteByAccount(n);
+  for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});
+  for(let mm of (data.months||[]))await put('months',{...mm,accountId:current.id});
+  for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}
+  Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{}});
+  await put('accounts',current);openApp();toast(uiLang==='af'?'Jou Biz Snapshot is op hierdie toestel herstel.':'Your Biz Snapshot has been restored on this device.')
+ }catch(e){console.error(e);toast(uiLang==='af'?'Hierdie lyk nie soos ’n geldige Biz Snapshot-backup nie.':'This does not look like a valid Biz Snapshot backup.')}
+}
+
+async function init(){db=await openDB();applyLang();$('#tabLogin').onclick=()=>showTab(true);$('#tabRegister').onclick=()=>showTab(false);$('#loginLang').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#regLanguage').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#loginForm').onsubmit=login;
+$('#firstRestoreBtn').onclick=()=>$('#firstRestoreFile').click();
+$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();
 $('#moveDeviceBtn').onclick=()=>moveDialog.showModal();
 $('#moveBackupBtn').onclick=backupData;
 $('#moveRestoreBtn').onclick=()=>$('#moveRestoreFile').click();
