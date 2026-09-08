@@ -322,12 +322,6 @@ h2{font-size:clamp(22px,7vw,30px)!important}
 }
 </style>
 
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b5d55">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Biz Snapshot SA">
 </head>
 <body>
 <div id="toast" class="toast"></div>
@@ -345,7 +339,7 @@ h2{font-size:clamp(22px,7vw,30px)!important}
   </div>
 </section>
 
-<section id="loginView" class="login hidden">
+<section id="loginView" class="login">
   <div class="login-card">
     <div class="logo">BS</div>
     <h1>Biz Snapshot SA</h1>
@@ -1155,19 +1149,14 @@ function b64uDecode(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)
 function getDeviceId(){let id=localStorage.getItem('bizSnapshotDeviceId');if(!id){id=uid().replace(/-/g,'').toUpperCase();localStorage.setItem('bizSnapshotDeviceId',id)}return id}
 async function verifyLicense(token){try{let [p,s]=token.trim().split('.');if(!p||!s)return false;let payload=JSON.parse(new TextDecoder().decode(b64uDecode(p)));if(payload.product!=='Biz Snapshot SA'||payload.device!==getDeviceId())return false;let key=await crypto.subtle.importKey('jwk',PUBLIC_JWK,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,b64uDecode(s),new TextEncoder().encode(p))}catch(e){return false}}
 async function gate(){
-  const id=getDeviceId();
-  const dc=document.getElementById('deviceCode');
-  if(dc)dc.textContent=id;
-  const tok=localStorage.getItem('bizSnapshotLicense');
-  if(tok && await verifyLicense(tok)){
-    $('#activationView').classList.add('hidden');
-    $('#loginView').classList.remove('hidden');
-    return;
-  }
-  $('#appView').classList.add('hidden');
-  $('#loginView').classList.add('hidden');
+  let id=getDeviceId();
+  $('#deviceCode').textContent=id;
+  let tok=localStorage.getItem('bizSnapshotLicense');
+  if(tok&&await verifyLicense(tok)){showLogin();return true}
   $('#activationView').classList.remove('hidden');
+  $('#loginView').classList.add('hidden');
   applyLang();
+  return false
 }
 function showLogin(){$('#activationView').classList.add('hidden');$('#loginView').classList.remove('hidden');applyLang()}
 async function activate(){let tok=$('#licenseInput').value.trim();if(await verifyLicense(tok)){localStorage.setItem('bizSnapshotLicense',tok);toast(tr('activationGood'));showLogin();await restoreSession()}else toast(tr('activationBad'))}
@@ -1200,14 +1189,10 @@ $('#moveBackupBtn').onclick=backupData;
 $('#moveRestoreBtn').onclick=()=>$('#moveRestoreFile').click();
 $('#moveRestoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);
 $('#installHelpBtn').onclick=()=>{updateDeviceUXTexts();$('#installNowBtn').classList.toggle('hidden',!installPrompt);installHelpDialog.showModal()};
-$('#installNowBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installNowBtn').classList.add('hidden');$('#installBtn').classList.add('hidden')}};$('#printReportBtn').onclick=printReport;$('#csvReportBtn').onclick=downloadCSV;$('#zipReportBtn').onclick=bookkeeperPack;$('#logoutBtn').onclick=()=>{};$$('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());$('#copyDevice').onclick=async()=>{await navigator.clipboard.writeText(getDeviceId());toast(tr('copied'))};$('#activateBtn').onclick=activate;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn').classList.remove('hidden');$('#installNowBtn').classList.remove('hidden')});$('#installBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installBtn').classList.add('hidden')}};if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});await gate();if($('#activationView').classList.contains('hidden')){let opened=await restoreSession();if(!opened){$('#loginView').classList.remove('hidden');$('#registerForm').classList.remove('hidden')}}}
+$('#installNowBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installNowBtn').classList.add('hidden');$('#installBtn').classList.add('hidden')}};$('#printReportBtn').onclick=printReport;$('#csvReportBtn').onclick=downloadCSV;$('#zipReportBtn').onclick=bookkeeperPack;$('#logoutBtn').onclick=()=>{};$$('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());$('#copyDevice').onclick=async()=>{await navigator.clipboard.writeText(getDeviceId());toast(tr('copied'))};$('#activateBtn').onclick=activate;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn').classList.remove('hidden');$('#installNowBtn').classList.remove('hidden')});$('#installBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installBtn').classList.add('hidden')}};if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});let licensed=await gate();if(licensed){let opened=await restoreSession();if(!opened){$('#loginView').classList.remove('hidden');$('#registerForm').classList.remove('hidden')}}}
 
 window.addEventListener('error',e=>{console.error('Biz Snapshot startup error',e.error||e.message)});
 window.addEventListener('unhandledrejection',e=>{console.error('Biz Snapshot promise error',e.reason)});
-
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('SW registration skipped',e)));
-}
 
 init();
 </script>
