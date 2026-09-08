@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Biz Snapshot">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Biz Snapshot SA — Final Preview</title>
+<title>Biz Snapshot SA</title>
 <style>
 :root{--bg:#fbf8f3;--card:#fffdf9;--ink:#26332d;--muted:#7f8b84;--line:#eee6dc;--sage:#6f927f;--sage-dark:#4f6f60;--sage-soft:#e9f1ec;--peach:#e8b39a;--peach-soft:#fbeee7;--gold:#d7b45d;--gold-soft:#fff7dd;--rose:#c97878;--rose-soft:#fbe8e8;--shadow:0 10px 30px rgba(79,70,56,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
@@ -50,6 +50,25 @@ dialog{border:0;border-radius:24px;width:min(760px,94vw);padding:0;box-shadow:0 
 .guide-card{padding:14px;border:1px solid var(--line);border-radius:15px;background:#fff;margin:10px 0}
 .guide-card strong{display:block;margin-bottom:5px}.guide-card p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
 @media(max-width:650px){.device-actions{grid-template-columns:1fr}.top-actions .device-nav-label{display:none}}
+
+/* PHONE-FIRST UX */
+#logoutBtn,#loginForm,.tabs{display:none!important}
+.check-row{display:flex!important;align-items:flex-start!important;gap:10px!important;padding:12px!important;width:100%!important}
+.check-row input[type="checkbox"]{width:20px!important;min-width:20px!important;max-width:20px!important;height:20px!important;flex:0 0 20px!important;margin:1px 0 0!important;padding:0!important}
+.check-row span{min-width:0!important;flex:1 1 auto!important;overflow-wrap:anywhere!important;font-size:12px!important;line-height:1.45!important}
+@media(max-width:700px){
+  #incomeRows tr,#expenseRows tr{display:block!important;margin:0 0 12px!important;padding:13px!important;border:1px solid var(--line)!important;border-radius:16px!important;background:var(--card)!important;box-shadow:0 4px 14px rgba(79,70,56,.05)!important}
+  #incomeRows td,#expenseRows td{display:flex!important;justify-content:space-between!important;gap:12px!important;width:100%!important;padding:5px 0!important;border:0!important;white-space:normal!important;text-align:left!important}
+  #incomeRows td:last-child,#expenseRows td:last-child{padding-top:10px!important;justify-content:flex-start!important}
+  #incomeRows .row-actions,#expenseRows .row-actions{display:flex!important;gap:8px!important;width:100%!important}
+  #incomeRows .row-actions .edit,#expenseRows .row-actions .edit{flex:1!important;font-weight:900!important}
+  #incomeRows .row-actions .delete,#expenseRows .row-actions .delete{width:48px!important}
+  #incomeRows td::before,#expenseRows td::before{content:attr(data-label);font-weight:800;color:var(--muted);flex:0 0 42%}
+  #incomeHead,#expenseHead{display:none!important}
+  .table-wrap{overflow:visible!important}
+  .top-actions{flex-wrap:wrap!important}
+}
+
 </style>
 <style id="mobile-v6">
 @media(max-width:700px){
@@ -206,18 +225,112 @@ h2{font-size:clamp(22px,7vw,30px)!important}
     width:100%!important;
     min-height:48px!important;
   }
-
-  /* Preview badge must never block a control. */
-  body > div[style*="position:fixed"][style*="FINAL PREVIEW"]{
-    pointer-events:none!important;
-    opacity:.55!important;
-  }
 }
 </style>
 
+
+<style id="core-launch-ui-fix">
+/* Known phone regressions fixed after real-device testing */
+#logoutBtn{display:none!important}
+#moveDeviceBtn .device-nav-label{display:inline!important}
+@media(max-width:700px){
+  #installHelpBtn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-height:50px!important;
+    padding:10px 8px!important;
+    font-size:16px!important;
+    white-space:normal!important;
+  }
+  #installHelpBtn .device-nav-label{display:inline!important}
+
+  /* Phone transaction cards: remove desktop table width completely */
+  #incomeRows,#expenseRows,
+  #incomeRows tr,#expenseRows tr,
+  #incomeRows td,#expenseRows td{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #incomeRows,#expenseRows{
+    display:block!important;
+    width:100%!important;
+  }
+  #incomeRows tr,#expenseRows tr{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 12px!important;
+    padding:14px!important;
+    border:1px solid var(--line)!important;
+    border-radius:16px!important;
+    background:var(--card)!important;
+    overflow:hidden!important;
+  }
+  #incomeRows td,#expenseRows td{
+    display:grid!important;
+    grid-template-columns:minmax(105px,42%) minmax(0,1fr)!important;
+    align-items:start!important;
+    gap:10px!important;
+    width:100%!important;
+    padding:6px 0!important;
+    border:0!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+  }
+  #incomeRows td::before,#expenseRows td::before{
+    content:attr(data-label)!important;
+    display:block!important;
+    font-weight:800!important;
+    color:var(--muted)!important;
+    min-width:0!important;
+  }
+  #incomeRows td:last-child,#expenseRows td:last-child{
+    display:block!important;
+    padding-top:12px!important;
+  }
+  #incomeRows td:last-child::before,#expenseRows td:last-child::before{
+    margin-bottom:8px!important;
+  }
+  #incomeRows .row-actions,#expenseRows .row-actions{
+    display:grid!important;
+    grid-template-columns:1fr 52px!important;
+    gap:8px!important;
+    width:100%!important;
+  }
+  #incomeRows .row-actions .edit,#expenseRows .row-actions .edit{
+    width:100%!important;
+    min-height:46px!important;
+    font-weight:900!important;
+  }
+  #incomeRows .row-actions .delete,#expenseRows .row-actions .delete{
+    width:52px!important;
+    min-height:46px!important;
+  }
+  #incomeRows tr:has(td.empty),#expenseRows tr:has(td.empty){
+    display:block!important;
+  }
+  #incomeRows td.empty,#expenseRows td.empty{
+    display:block!important;
+    text-align:center!important;
+  }
+  #incomeRows td.empty::before,#expenseRows td.empty::before{display:none!important}
+  #monthView .table-wrap{overflow:visible!important;width:100%!important}
+  #monthView table{min-width:0!important;width:100%!important;display:block!important}
+  #monthView thead{display:none!important}
+}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b5d55">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Biz Snapshot SA">
 </head>
 <body>
-<div id="toast" class="toast"></div><div style="position:fixed;right:10px;bottom:10px;z-index:9999;background:#26332d;color:white;padding:7px 10px;border-radius:999px;font:700 11px system-ui;opacity:.82">FINAL PREVIEW</div>
+<div id="toast" class="toast"></div>
 
 <section id="activationView" class="activate hidden">
   <div class="activate-card">
@@ -236,37 +349,31 @@ h2{font-size:clamp(22px,7vw,30px)!important}
   <div class="login-card">
     <div class="logo">BS</div>
     <h1>Biz Snapshot SA</h1>
-    <p data-i18n="tagline">Eenvoudige geldrekords vir klein besighede — sonder accounting jargon.</p>
+    <p id="onboardingTagline">Eenmalige opstelling op hierdie foon. Daarna maak Biz Snapshot direk op jou dashboard oop.</p>
     <label style="margin-top:0"><span>Language / Taal</span><select id="loginLang"><option value="af">Afrikaans</option><option value="en">English</option></select></label>
     <div class="device-trust">
-      <strong id="deviceTrustTitle">Jou data bly privaat op hierdie toestel</strong>
-      <p id="deviceTrustText">Biz Snapshot sync nie jou finansiële data outomaties tussen toestelle nie. Wil jy later op ’n laptop werk? Gebruik Backup / Skuif na ’n ander toestel.</p>
+      <strong id="deviceTrustTitle">Eenmalige opstelling op hierdie foon</strong>
+      <p id="deviceTrustText">Jou finansiële data en strokies bly privaat op hierdie foon. Gebruik Beskerm my data gereeld vir ’n veilige backup.</p>
     </div>
-    <button id="firstRestoreBtn" class="btn btn-soft full" type="button" style="margin:0 0 14px"><span id="firstRestoreText">Het jy reeds Biz Snapshot gebruik? Restore jou bestaande backup hier</span></button>
+    <button id="firstRestoreBtn" class="btn btn-soft full" type="button" style="margin:0 0 14px"><span id="firstRestoreText">Het jy ’n backup van ’n vorige foon? Herstel my data hier</span></button>
     <input id="firstRestoreFile" type="file" accept=".json,application/json" class="hidden">
-    <div class="tabs"><button id="tabLogin" class="tab active" type="button" data-i18n="login">Teken in</button><button id="tabRegister" class="tab" type="button" data-i18n="newBusiness">Nuwe besigheid</button></div>
-    <form id="loginForm">
-      <label><span data-i18n="businessName">Besigheidsnaam</span><input id="loginBusiness" required autocomplete="username"></label>
-      <label><span data-i18n="password">Wagwoord</span><input id="loginPassword" type="password" required autocomplete="current-password"></label>
-      <button class="btn btn-primary full" data-i18n="login">Teken in</button><p id="loginDeviceHelp" class="micro" style="margin-top:10px">Hierdie maak net ’n besigheid oop wat reeds in hierdie browser/toestel gestoor is. Het jy op ’n ander browser of toestel begin? Gebruik Restore hier bo.</p>
-    </form>
-    <form id="registerForm" class="hidden">
+    <div class="tabs hidden"><button id="tabLogin" class="tab" type="button">Teken in</button><button id="tabRegister" class="tab active" type="button">Nuwe besigheid</button></div>
+    <form id="loginForm" class="hidden" aria-hidden="true"><input id="loginBusiness"><input id="loginPassword" type="password"></form>
+    <h2 id="firstSetupHeading" style="margin:14px 0 4px">Stel Biz Snapshot op</h2>
+    <p id="firstSetupNote" class="micro" style="margin:0 0 10px">Jy doen hierdie net een keer op hierdie foon.</p>
+    <form id="registerForm">
       <label><span data-i18n="businessName">Besigheidsnaam</span><input id="regBusiness" required></label>
-      <label><span data-i18n="password">Wagwoord</span><input id="regPassword" type="password" minlength="6" required></label>
+      <input id="regPassword" type="hidden" value="">
       <label><span>Language / Taal</span><select id="regLanguage"><option value="af">Afrikaans</option><option value="en">English</option></select></label>
       <div class="form-grid">
         <label><span data-i18n="sarsRate">SARS-beplanning %</span><input id="regSars" type="number" value="25" min="0" max="100" step="0.1"></label>
         <label><span data-i18n="givingRate">Tiende / Gee %</span><input id="regGiving" type="number" value="10" min="0" max="100" step="0.1"></label>
       </div>
       <label><span data-i18n="givingBasis">Bereken Tiende/Gee op</span><select id="regGivingBasis"><option value="income" data-i18n="incomeBasis">Inkomste</option><option value="profit" data-i18n="profitBasis">Wins</option></select></label>
-      
-      <label class="check-row">
-        <input id="localDataAck" type="checkbox" required>
-        <span id="localDataAckText">Ek verstaan dat my Biz Snapshot-data op hierdie toestel/browser gestoor word en nie outomaties met my ander toestelle sync nie.</span>
-      </label>
-      <button class="btn btn-primary full" data-i18n="createBusiness">Skep my besigheid</button>
+      <label class="check-row"><input id="localDataAck" type="checkbox" required><span id="localDataAckText">Ek verstaan dat my Biz Snapshot-data op hierdie foon gestoor word en dat ek gereeld ’n backup moet maak.</span></label>
+      <button class="btn btn-primary full" type="submit">Begin Biz Snapshot</button>
     </form>
-    <p id="localPricingNote" class="micro" style="margin-top:16px;text-align:center">Eenmalige aankoop. Geen maandelikse Biz Snapshot-intekening of betaalde credits nie.</p>
+    <p id="localPricingNote" class="micro" style="margin-top:16px;text-align:center">Eenmalige aankoop. Geen maandelikse Biz Snapshot-intekening of betaalde credits om die app te gebruik nie.</p>
   </div>
 </section>
 
@@ -275,12 +382,12 @@ h2{font-size:clamp(22px,7vw,30px)!important}
   <div class="brand"><div class="logo">BS</div><div><strong>Biz Snapshot SA</strong><span id="businessLabel">—</span></div></div>
   <div class="top-actions">
     <select id="yearSelect" class="year"></select>
-    <button id="reportBtn" class="btn btn-soft secondary-mobile" data-i18n="reports">Verslae</button>
-    <button id="moveDeviceBtn" class="btn btn-soft" type="button"><span class="device-nav-label" id="moveDeviceLabel">Skuif toestel</span></button>
+    <button id="reportBtn" class="btn btn-soft secondary-mobile" data-i18n="reports">Verslae / PDF</button>
+    <button id="moveDeviceBtn" class="btn btn-soft" type="button" aria-label="Beskerm my data / Protect my data"><span class="device-nav-label" id="moveDeviceLabel">Beskerm my data</span></button>
     <button id="installHelpBtn" class="btn btn-soft" type="button"><span class="device-nav-label" id="homeScreenLabel">Home Screen</span></button>
     <button id="installBtn" class="btn btn-soft hidden" data-i18n="install">Installeer</button>
     <button id="settingsBtn" class="btn btn-soft" data-i18n="settings">Instellings</button>
-    <button id="logoutBtn" class="btn btn-soft secondary-mobile" data-i18n="logout">Uit</button>
+    <button id="logoutBtn" class="btn btn-soft secondary-mobile hidden" data-i18n="logout" aria-hidden="true">Uit</button>
   </div>
 </header>
 
@@ -442,7 +549,7 @@ function updateDeviceUXTexts(){
   set('loginDeviceHelp','Hierdie maak net ’n besigheid oop wat reeds in hierdie browser/toestel gestoor is. Het jy op ’n ander browser of toestel begin? Gebruik Restore hier bo.','This only opens a business already stored in this browser/device. Started in another browser or device? Use Restore above.');
   set('localDataAckText','Ek verstaan dat my Biz Snapshot-data op hierdie toestel/browser gestoor word en nie outomaties met my ander toestelle sync nie.','I understand that my Biz Snapshot data is stored on this device/browser and does not automatically sync with my other devices.');
   set('localPricingNote','Eenmalige aankoop. Geen maandelikse Biz Snapshot-intekening of betaalde credits nie.','One-time purchase. No monthly Biz Snapshot subscription or paid credits.');
-  set('moveDeviceLabel','Werk op ’n ander toestel','Move device'); set('homeScreenLabel','Home Screen','Home Screen');
+  set('moveDeviceLabel','Beskerm my data','Protect my data'); set('homeScreenLabel','Home Screen','Home Screen');
   set('settingsLocalNotice','Jou data is plaaslik op hierdie toestel. Gebruik Backup / Skuif na ’n ander toestel voordat jy van browser of toestel verander.','Your data is stored locally on this device. Use Backup / Move to another device before changing browser or device.');
   set('moveTitle','Backup / Skuif na ’n ander toestel','Backup / Move to another device');
   set('moveImportant','Belangrik: dit is ’n oordrag, nie live sync nie.','Important: this is a transfer, not live sync.');
@@ -488,16 +595,83 @@ async function byAccount(n){
 async function hash(s){let b=new TextEncoder().encode(s),h=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function accountByName(n){let a=await all('accounts');return a.find(x=>x.business.toLowerCase()===n.trim().toLowerCase())}
 function showTab(login){$('#loginForm').classList.toggle('hidden',!login);$('#registerForm').classList.toggle('hidden',login);$('#tabLogin').classList.toggle('active',login);$('#tabRegister').classList.toggle('active',!login)}
-async function register(e){e.preventDefault();let business=$('#regBusiness').value.trim();if(await accountByName(business))return toast(uiLang==='af'?'Daardie besigheid bestaan reeds op hierdie toestel.':'That business already exists on this device.');current={id:uid(),business,passwordHash:await hash($('#regPassword').value),sarsRate:Number($('#regSars').value)/100,givingRate:Number($('#regGiving').value)/100,givingBasis:$('#regGivingBasis').value,language:$('#regLanguage').value,setAside:0};await put('accounts',current);localStorage.setItem('bizFriendlySession',current.id);openApp()}
-async function login(e){
- e.preventDefault();let a=await accountByName($('#loginBusiness').value);
- if(!a){alert(uiLang==='af'?'Ons kry nie hierdie besigheid op hierdie toestel/browser nie.\n\nAs jy Biz Snapshot voorheen in ’n ander browser of op ’n ander toestel gebruik het, gebruik Restore Backup om jou besigheid hierheen te bring.\n\nJou Biz Snapshot-profiel en data sync nie outomaties tussen toestelle nie.':'We cannot find this business on this device/browser.\n\nIf you used Biz Snapshot before in another browser or on another device, use Restore Backup to bring your business here.\n\nYour Biz Snapshot profile and data do not automatically sync between devices.');return}
- if(a.passwordHash!==await hash($('#loginPassword').value)){toast(uiLang==='af'?'Die wagwoord vir hierdie plaaslike besigheid is nie reg nie.':'The password for this local business is incorrect.');return}
- current=a;normalizeAccount();await put('accounts',current);localStorage.setItem('bizFriendlySession',a.id);openApp()
+async function register(e){
+  e.preventDefault();
+  let business=$('#regBusiness').value.trim();
+  if(!business)return;
+  let existing=await accountByName(business);
+  if(existing){current=existing;normalizeAccount();localStorage.setItem('bizFriendlySession',existing.id);localStorage.setItem('bizSnapshotCurrentAccountId',existing.id);openApp();return}
+  current={id:uid(),business,passwordHash:'',sarsRate:Number($('#regSars').value)/100,givingRate:Number($('#regGiving').value)/100,givingBasis:$('#regGivingBasis').value,language:$('#regLanguage').value,setAside:0};
+  await put('accounts',current);
+  localStorage.setItem('bizFriendlySession',current.id);localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
+  openApp()
 }
+async function login(e){e.preventDefault();}
 function normalizeAccount(){current.language=current.language||'af';current.givingBasis=current.givingBasis||'profit';current.sarsRate=Number(current.sarsRate??.25);current.givingRate=Number(current.givingRate??.10);current.setAside=Number(current.setAside||0);current.setAsideByFY=current.setAsideByFY||{}}
-async function restoreSession(){let id=localStorage.getItem('bizFriendlySession');if(!id)return;let a=await rq(st('accounts').get(id));if(a){current=a;normalizeAccount();openApp()}}
-function openApp(){uiLang=current.language||'af';localStorage.setItem('bizUILang',uiLang);applyLang();$('#loginView').classList.add('hidden');$('#activationView').classList.add('hidden');$('#appView').classList.remove('hidden');initYears();renderDashboard()}
+async function restoreSession(){
+  try{
+    let accounts=await all('accounts');
+    if(!accounts.length)return false;
+
+    let a=null;
+    const ids=[
+      localStorage.getItem('bizFriendlySession'),
+      localStorage.getItem('bizSnapshotCurrentAccountId')
+    ].filter(Boolean);
+
+    for(const id of ids){
+      a=accounts.find(x=>x.id===id);
+      if(a)break;
+    }
+
+    if(!a){
+      if(accounts.length===1){
+        a=accounts[0];
+      }else{
+        const txs=await all('transactions');
+        const score=new Map();
+        for(const t of txs){
+          if(!t||!t.accountId)continue;
+          const when=Date.parse(t.updatedAt||t.createdAt||t.date||'')||0;
+          const prev=score.get(t.accountId)||{count:0,when:0};
+          prev.count++;
+          prev.when=Math.max(prev.when,when);
+          score.set(t.accountId,prev);
+        }
+        accounts.sort((x,y)=>{
+          const sx=score.get(x.id)||{count:0,when:0};
+          const sy=score.get(y.id)||{count:0,when:0};
+          return (sy.when-sx.when)||(sy.count-sx.count);
+        });
+        a=accounts[0];
+      }
+    }
+
+    if(!a)return false;
+    current=a;
+    normalizeAccount();
+    localStorage.setItem('bizFriendlySession',current.id);
+    localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
+    openApp();
+    return true;
+  }catch(err){
+    console.error('Session restore failed',err);
+    return false;
+  }
+}
+function openApp(){
+  if(!current)return;
+  localStorage.setItem('bizFriendlySession',current.id);
+  localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
+  uiLang=current.language||'af';
+  localStorage.setItem('bizUILang',uiLang);
+  applyLang();
+  $('#loginView').classList.add('hidden');
+  $('#activationView').classList.add('hidden');
+  $('#appView').classList.remove('hidden');
+  initYears();
+  renderDashboard();
+}
 function currentFYStart(){let d=new Date();return d.getMonth()>=2?d.getFullYear():d.getFullYear()-1}
 function initYears(){let y=currentFYStart(),val=$('#yearSelect').value?Number($('#yearSelect').value):y;$('#yearSelect').innerHTML=[y-2,y-1,y,y+1].map(v=>`<option value="${v}" ${v===val?'selected':''}>${v}/${v+1}</option>`).join('')}
 const fy=()=>Number($('#yearSelect').value||currentFYStart()),tYear=t=>Number((t.date||'').slice(0,4)),tMonth=t=>Number((t.date||'').slice(5,7))-1,fyOf=t=>tMonth(t)>=2?tYear(t):tYear(t)-1;
@@ -521,13 +695,17 @@ function classLabel(v){return {business:tr('businessClass'),personal:tr('persona
 function statusLabel(v){return {received:tr('received'),outstanding:tr('outstanding'),uncertain:tr('uncertain'),paid:tr('paid')}[normStatus(v)]||v}
 async function renderMonth(){let allTx=await byAccount('transactions'),s=await statsForMonth(currentMonth,allTx);$('#mIncome').textContent=money(s.inc);$('#mExpense').textContent=money(s.out);$('#mPersonal').textContent=money(s.personal);$('#mProfit').textContent=money(s.profit);$('#mSars').textContent=money(s.sars);$('#mGiving').textContent=money(s.giving);$('#mOutstanding').textContent=money(s.outs);$('#mBank').textContent=s.bank?tr('yes'):tr('no');$('#bankChecked').checked=s.bank;
 let inc=s.tx.filter(t=>t.type==='income').sort((a,b)=>(b.date||'').localeCompare(a.date||'')),exp=s.tx.filter(t=>t.type==='expense').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-$('#incomeRows').innerHTML=inc.length?inc.map(t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.party)}</td><td>${esc(t.purpose)}</td><td class="money">${money(t.gross)}</td><td class="money">${money(t.fees)}</td><td class="money">${money(Math.max(0,Number(t.gross||0)-Number(t.fees||0)))}</td><td>${esc(statusLabel(t.status))}</td><td><div class="row-actions"><button class="btn btn-soft edit" data-id="${t.id}">${tr('edit')}</button><button class="btn btn-danger delete" data-id="${t.id}">×</button></div></td></tr>`).join(''):`<tr><td colspan="8" class="empty">${tr('noIncome')}</td></tr>`;
-$('#expenseRows').innerHTML=exp.length?exp.map(t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.party)}</td><td>${esc(t.purpose)}</td><td>${esc(classLabel(t.classification))}</td><td class="money">${money(t.amount)}</td><td>${t.receiptId?'✓':'—'}</td><td><div class="row-actions"><button class="btn btn-soft edit" data-id="${t.id}">${tr('edit')}</button><button class="btn btn-danger delete" data-id="${t.id}">×</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">${tr('noExpense')}</td></tr>`;
+$('#incomeRows').innerHTML=inc.length?inc.map(t=>`<tr><td data-label="${tr('date')}">${esc(t.date)}</td><td data-label="${tr('clientSource')}">${esc(t.party)}</td><td data-label="${tr('sold')}">${esc(t.purpose)}</td><td data-label="${tr('gross')}" class="money">${money(t.gross)}</td><td data-label="${tr('fees')}" class="money">${money(t.fees)}</td><td data-label="${tr('received')}" class="money">${money(Math.max(0,Number(t.gross||0)-Number(t.fees||0)))}</td><td data-label="${tr('status')}">${esc(statusLabel(t.status))}</td><td data-label="${tr('edit')}"><div class="row-actions"><button class="btn btn-soft edit" data-id="${t.id}">✏️ ${tr('edit')}</button><button class="btn btn-danger delete" data-id="${t.id}">×</button></div></td></tr>`).join(''):`<tr><td colspan="8" class="empty">${tr('noIncome')}</td></tr>`;
+$('#expenseRows').innerHTML=exp.length?exp.map(t=>`<tr><td data-label="${tr('date')}">${esc(t.date)}</td><td data-label="${tr('payee')}">${esc(t.party)}</td><td data-label="${tr('purpose')}">${esc(t.purpose)}</td><td data-label="${tr('classification')}">${esc(classLabel(t.classification))}</td><td data-label="${tr('amount')}" class="money">${money(t.amount)}</td><td data-label="${tr('receipts')}">${t.receiptId?'✓':'—'}</td><td data-label="${tr('edit')}"><div class="row-actions"><button class="btn btn-soft edit" data-id="${t.id}">✏️ ${tr('edit')}</button><button class="btn btn-danger delete" data-id="${t.id}">×</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">${tr('noExpense')}</td></tr>`;
 $$('.edit').forEach(b=>b.onclick=()=>editTx(b.dataset.id));$$('.delete').forEach(b=>b.onclick=async()=>{if(confirm(tr('confirmDelete'))){let t=allTx.find(x=>x.id===b.dataset.id);await del('transactions',b.dataset.id);if(t?.receiptId)await del('receipts',t.receiptId);toast(tr('deleted'));await renderMonth()}});
 await renderReceipts(s.tx)}
 async function renderReceipts(monthTx){let ids=new Set(monthTx.map(t=>t.receiptId).filter(Boolean)),rs=(await byAccount('receipts')).filter(r=>ids.has(r.id)),g=$('#receiptGrid');g.innerHTML='';if(!rs.length){g.innerHTML=`<div class="empty">${tr('noReceipts')}</div>`;return}for(let r of rs){let el=document.createElement('article');el.className='receipt-card';let media='<div style="height:140px;display:grid;place-items:center;background:#f3efe9;font-size:12px;color:#7f8b84">PDF / file</div>';if(r.type?.startsWith('image/')){let u=URL.createObjectURL(r.blob);media=`<img src="${u}" alt="${tr('receipts')}">`}el.innerHTML=media+`<div class="meta"><strong>${esc(r.supplier||r.name||tr('receipts'))}</strong><span>${esc(r.date||'')} ${r.amount?'· '+money(r.amount):''}</span><span>${tr('storedDevice')}</span></div>`;g.appendChild(el)}}
 function dateForMonth(m){let y=actualYearForMonth(m),today=new Date(),d=new Date(y,m+1,0).getDate(),day=(today.getFullYear()===y&&today.getMonth()===m)?today.getDate():1;return `${y}-${String(m+1).padStart(2,'0')}-${String(Math.min(day,d)).padStart(2,'0')}`}
 
+const INCOME_CATEGORIES={
+  af:['Dienste','Produkte / Verkope','Kommissie','Konsultasie','Kursus / Opleiding','Digitale produkte','Ander inkomste'],
+  en:['Services','Products / Sales','Commission','Consulting','Course / Training','Digital products','Other income']
+};
 const EXPENSE_CATEGORIES={
   af:[
     'Huur','Salarisse / Lone','Water & Elektrisiteit','Telefoon & Internet','Subscriptions',
@@ -553,6 +731,12 @@ function populateExpenseCategories(){
   if(tx)tx.placeholder=uiLang==='af'?'Kies of tik ’n kategorie':'Choose or type a category';
   if(sc)sc.placeholder=uiLang==='af'?'Kies of tik ’n kategorie':'Choose or type a category';
 }
+function populateTxCategories(type){
+  let cats=(type==='income'?INCOME_CATEGORIES:EXPENSE_CATEGORIES)[uiLang==='af'?'af':'en'];
+  let a=$('#expenseCategoryList');if(a)a.innerHTML=cats.map(x=>`<option value="${esc(x)}"></option>`).join('');
+  let tx=$('#txCategory');if(tx)tx.placeholder=uiLang==='af'?'Kies of tik ’n kategorie':'Choose or type a category';
+}
+
 function smartCategory(value,source){
   let v=(value||'').toLowerCase(),
       hint=source==='scan'?$('#scanCategoryHint'):$('#categoryHint');
@@ -576,14 +760,126 @@ function smartCategory(value,source){
 }
 
 function fillSelects(type,existing={}){if(type==='income')$('#txStatus').innerHTML=[['received',tr('received')],['outstanding',tr('outstanding')],['uncertain',tr('uncertain')]].map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');else $('#txStatus').innerHTML=[['paid',tr('paid')],['uncertain',tr('uncertain')]].map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');$('#txClass').innerHTML=[['business',tr('businessClass')],['personal',tr('personalClass')],['sars',tr('sarsClass')],['uncertain',tr('uncertainClass')]].map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');$('#txMethod').innerHTML=[['EFT',tr('eft')],['Card',tr('card')],['Cash',tr('cash')],['Other',tr('other')]].map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}
-function openTx(type,m=currentMonth,existing=null){$('#txForm').reset();populateExpenseCategories();$('#txType').value=type;$('#txId').value=existing?.id||'';fillSelects(type,existing);$('#txDate').value=existing?.date||dateForMonth(m);let ex=type==='expense';$('#txTitle').textContent=existing?(ex?tr('editExpense'):tr('editIncome')):(ex?tr('newExpense'):tr('newIncome'));$('#partyText').textContent=ex?tr('payee'):tr('clientSource');$('#purposeText').textContent=ex?tr('purpose'):tr('sold');$('#grossWrap').classList.toggle('hidden',ex);$('#feesWrap').classList.toggle('hidden',ex);$('#classWrap').classList.toggle('hidden',!ex);$('#amountWrap').classList.toggle('hidden',!ex);$('#methodWrap').classList.toggle('hidden',!ex);$('#receiptWrap').classList.toggle('hidden',!ex);$('#categoryHint').textContent='';if(existing){$('#txParty').value=existing.party||'';$('#txPurpose').value=existing.purpose||'';$('#txCategory').value=existing.category||'';$('#txNote').value=existing.note||'';$('#txStatus').value=normStatus(existing.status);if(ex){$('#txAmount').value=existing.amount||0;$('#txClass').value=normClass(existing.classification)||'business';$('#txMethod').value=existing.method||'Other'}else{$('#txGross').value=existing.gross||0;$('#txFees').value=existing.fees||0}}txDialog.showModal()}
+function openTx(type,m=currentMonth,existing=null){$('#txForm').reset();populateTxCategories(type);$('#txType').value=type;$('#txId').value=existing?.id||'';fillSelects(type,existing);$('#txDate').value=existing?.date||dateForMonth(m);let ex=type==='expense';$('#txTitle').textContent=existing?(ex?tr('editExpense'):tr('editIncome')):(ex?tr('newExpense'):tr('newIncome'));$('#partyText').textContent=ex?tr('payee'):tr('clientSource');$('#purposeText').textContent=ex?tr('purpose'):tr('sold');$('#grossWrap').classList.toggle('hidden',ex);$('#feesWrap').classList.toggle('hidden',ex);$('#classWrap').classList.toggle('hidden',!ex);$('#amountWrap').classList.toggle('hidden',!ex);$('#methodWrap').classList.toggle('hidden',!ex);$('#receiptWrap').classList.toggle('hidden',!ex);$('#categoryHint').textContent='';if(existing){$('#txParty').value=existing.party||'';$('#txPurpose').value=existing.purpose||'';$('#txCategory').value=existing.category||'';$('#txNote').value=existing.note||'';$('#txStatus').value=normStatus(existing.status);if(ex){$('#txAmount').value=existing.amount||0;$('#txClass').value=normClass(existing.classification)||'business';$('#txMethod').value=existing.method||'Other'}else{$('#txGross').value=existing.gross||0;$('#txFees').value=existing.fees||0}}txDialog.showModal()}
 async function editTx(id){let tx=await byAccount('transactions'),t=tx.find(x=>x.id===id);if(t)openTx(t.type,tMonth(t),t)}
 async function saveReceipt(file,meta={}){let r={id:uid(),accountId:current.id,name:file.name,type:file.type,size:file.size,blob:file,createdAt:new Date().toISOString(),...meta};await put('receipts',r);return r.id}
 async function saveTx(e){e.preventDefault();let type=$('#txType').value,id=$('#txId').value,existing=id?await rq(st('transactions').get(id)):null,rid=existing?.receiptId||null;if(type==='expense'&&$('#txReceipt').files[0]){if(rid)await del('receipts',rid);rid=await saveReceipt($('#txReceipt').files[0],{supplier:$('#txParty').value,date:$('#txDate').value,amount:Number($('#txAmount').value||0)})}let t={id:id||uid(),accountId:current.id,type,date:$('#txDate').value,party:$('#txParty').value,purpose:$('#txPurpose').value,category:$('#txCategory').value,status:$('#txStatus').value,note:$('#txNote').value,receiptId:rid};if(type==='income'){t.gross=Number($('#txGross').value||0);t.fees=Number($('#txFees').value||0)}else{t.amount=Number($('#txAmount').value||0);t.classification=$('#txClass').value;t.method=$('#txMethod').value}await put('transactions',t);txDialog.close();toast(existing?tr('updated'):tr('saved'));if(!$('#monthView').classList.contains('hidden'))await renderMonth();else await renderDashboard()}
 function openScan(m=currentMonth){currentMonth=m;$('#scanForm').reset();populateExpenseCategories();$('#scanDate').value=dateForMonth(m);$('#scanPreview').innerHTML='';$('#ocrStatus').textContent='';scanDialog.showModal()}
 async function loadOCR(){if(window.Tesseract)return;await new Promise((res,rej)=>{let s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-function parseOCR(text){let lines=text.split(/\n/).map(x=>x.trim()).filter(Boolean),supplier=lines[0]||'',vals=[...text.matchAll(/(?:R\s*)?(\d{1,7}[.,]\d{2})/g)].map(m=>Number(m[1].replace(',','.'))).filter(n=>n>0),amount=vals.length?Math.max(...vals):'',dm=text.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/),date='';if(dm)date=`${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;let lower=text.toLowerCase(),cat='';if(/fuel|petrol|diesel|garage|engen|shell|bp\b/.test(lower))cat=uiLang==='af'?'Brandstof':'Fuel';else if(/restaurant|cafe|coffee|food/.test(lower))cat=uiLang==='af'?'Etes':'Meals';else if(/stationery|office/.test(lower))cat=uiLang==='af'?'Kantoor':'Office';return{supplier,amount,date,cat}}
-async function runOCR(){let f=$('#scanFile').files[0];if(!f)return toast(tr('chooseReceipt'));$('#ocrStatus').textContent=tr('scanReading');try{await loadOCR();let {data}=await Tesseract.recognize(f,'eng',{logger:m=>{if(m.progress)$('#ocrStatus').textContent=`${tr('scanReading')} ${Math.round(m.progress*100)}%`}}),g=parseOCR(data.text);if(g.supplier)$('#scanSupplier').value=g.supplier;if(g.amount)$('#scanAmount').value=g.amount;if(g.date)$('#scanDate').value=g.date;if(g.cat)$('#scanCategory').value=g.cat;$('#ocrStatus').textContent=tr('scanDone')}catch(e){$('#ocrStatus').textContent=tr('scanFail')}}
+function parseOCR(text,confidence=0){
+  const lines=String(text||'').split(/\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+
+  // Supplier: only accept a plausible merchant-like line when OCR confidence is reasonable.
+  const supplierCandidates=lines.filter(x=>{
+    if(x.length<3||x.length>55) return false;
+    if(/tax|vat|invoice|receipt|total|subtotal|cash|change|tel|www|date|time|qty|amount|balance/i.test(x)) return false;
+    const letters=(x.match(/[A-Za-z]/g)||[]).length;
+    const weird=(x.match(/[^A-Za-z0-9 &.'()/-]/g)||[]).length;
+    return letters>=3 && letters/Math.max(1,x.length)>=0.45 && weird<=2;
+  });
+  const supplier=confidence>=55 ? (supplierCandidates[0]||'') : '';
+
+  // Total: ONLY accept an amount from a line explicitly labelled total/amount due.
+  let amount='';
+  const totalLine=[...lines].reverse().find(x=>
+    /(grand\s*total|amount\s*due|balance\s*due|total\s*(zar|r)?\b)/i.test(x) &&
+    /\d[\d\s,.]*[.,]\d{2}/.test(x)
+  );
+  if(totalLine){
+    const vals=[...totalLine.matchAll(/(?:R\s*)?(\d{1,3}(?:[ ,]\d{3})*|\d{1,7})[.,](\d{2})/g)]
+      .map(m=>Number((m[1].replace(/[ ,]/g,''))+'.'+m[2]))
+      .filter(n=>n>0&&n<10000000);
+    if(vals.length) amount=vals[vals.length-1];
+  }
+
+  let date='';
+  const dm=String(text||'').match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/);
+  if(dm){
+    const d=Number(dm[1]), mo=Number(dm[2]), y=Number(dm[3]);
+    if(d>=1&&d<=31&&mo>=1&&mo<=12) date=`${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+
+  const lower=String(text||'').toLowerCase();
+  let cat='';
+  if(/fuel|petrol|diesel|garage|engen|shell|\bbp\b/.test(lower))cat=uiLang==='af'?'Brandstof / Reiskoste':'Fuel / Travel';
+  else if(/restaurant|cafe|coffee|food/.test(lower))cat=uiLang==='af'?'Etes / Vermaak':'Meals / Entertainment';
+  else if(/stationery|office/.test(lower))cat=uiLang==='af'?'Kantoorbenodigdhede':'Office Supplies';
+
+  return {supplier,amount,date,cat,confidence:Number(confidence||0)};
+}
+
+async function prepareReceiptForOCR(file){
+  try{
+    const bitmap=await createImageBitmap(file);
+    const maxW=1600;
+    const scale=Math.min(1,maxW/bitmap.width);
+    const w=Math.max(1,Math.round(bitmap.width*scale));
+    const h=Math.max(1,Math.round(bitmap.height*scale));
+    const c=document.createElement('canvas'); c.width=w; c.height=h;
+    const ctx=c.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(bitmap,0,0,w,h);
+    const img=ctx.getImageData(0,0,w,h), d=img.data;
+    // Gentle grayscale + contrast boost; safer than hard thresholding.
+    for(let i=0;i<d.length;i+=4){
+      let g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+      g=Math.max(0,Math.min(255,(g-128)*1.35+128));
+      d[i]=d[i+1]=d[i+2]=g;
+    }
+    ctx.putImageData(img,0,0);
+    return c;
+  }catch(e){
+    return file;
+  }
+}
+
+async function runOCR(){
+  const f=$('#scanFile').files[0];
+  if(!f) return toast(tr('chooseReceipt'));
+
+  const btn=$('#ocrBtn');
+  btn.disabled=true;
+  $('#ocrStatus').textContent=tr('scanReading');
+
+  try{
+    await loadOCR();
+    const source=await prepareReceiptForOCR(f);
+    const result=await Tesseract.recognize(source,'eng',{
+      logger:m=>{
+        if(m.progress) $('#ocrStatus').textContent=`${tr('scanReading')} ${Math.round(m.progress*100)}%`;
+      }
+    });
+    const data=result.data||{};
+    const g=parseOCR(data.text||'',data.confidence||0);
+
+    // Never overwrite fields with doubtful OCR garbage.
+    if(g.supplier) $('#scanSupplier').value=g.supplier;
+    if(g.amount!=='') $('#scanAmount').value=g.amount;
+    if(g.date) $('#scanDate').value=g.date;
+    if(g.cat) $('#scanCategory').value=g.cat;
+
+    const enough=Boolean(g.supplier && g.amount!=='' && g.confidence>=55);
+    if(enough){
+      $('#ocrStatus').textContent=uiLang==='af'
+        ? `Strokie gelees (${Math.round(g.confidence)}% seker). Kontroleer asseblief Verskaffer, Datum en Totaal voor jy stoor.`
+        : `Receipt read (${Math.round(g.confidence)}% confidence). Please check Supplier, Date and Total before saving.`;
+    }else{
+      // Low confidence: do not present rubbish as fact.
+      if(!g.supplier) $('#scanSupplier').value='';
+      if(g.amount==='') $('#scanAmount').value='';
+      $('#ocrStatus').textContent=uiLang==='af'
+        ? 'Ek kon nie hierdie strokie betroubaar lees nie. Die foto is gekies; vul Verskaffer en Totaal asseblief handmatig in en kontroleer die datum.'
+        : 'I could not read this receipt reliably. The photo is selected; please enter Supplier and Total manually and check the date.';
+    }
+  }catch(e){
+    console.error('OCR failed',e);
+    $('#ocrStatus').textContent=uiLang==='af'
+      ? 'Outomatiese lees het nie gewerk nie. Die foto is steeds gekies; vul Verskaffer, Datum en Totaal handmatig in.'
+      : 'Automatic reading did not work. The photo is still selected; enter Supplier, Date and Total manually.';
+  }finally{
+    btn.disabled=false;
+  }
+}
+
 async function saveScan(e){e.preventDefault();let f=$('#scanFile').files[0];if(!f)return;let meta={supplier:$('#scanSupplier').value,date:$('#scanDate').value||dateForMonth(currentMonth),amount:Number($('#scanAmount').value||0),category:$('#scanCategory').value},rid=await saveReceipt(f,meta),t={id:uid(),accountId:current.id,type:'expense',date:meta.date,party:meta.supplier,purpose:uiLang==='af'?'Strokie geskandeer':'Receipt scanned',category:meta.category,classification:'business',amount:meta.amount,status:'paid',method:'Other',receiptId:rid,note:''};await put('transactions',t);scanDialog.close();toast(tr('scanSaved'));if(!$('#monthView').classList.contains('hidden'))await renderMonth();else await renderDashboard()}
 async function saveBank(){let m=await monthMeta(currentMonth);m.bankChecked=$('#bankChecked').checked;await put('months',m);await renderMonth()}
 function openSettings(){$('#settingsBusiness').value=current.business;$('#settingsSars').value=(current.sarsRate*100).toFixed(1);$('#settingsGiving').value=(current.givingRate*100).toFixed(1);$('#settingsGivingBasis').innerHTML=`<option value="income">${tr('incomeBasis')}</option><option value="profit">${tr('profitBasis')}</option>`;$('#settingsGivingBasis').value=current.givingBasis||'profit';$('#settingsLanguage').value=current.language||'af';$('#settingsSetAside').value=(current.setAsideByFY&&current.setAsideByFY[fy()])??current.setAside??0;settingsDialog.showModal()}
@@ -643,6 +939,9 @@ async function downloadCSV(){
   toast(tr('downloaded'));
 }
 async function printReport(){
+  let reportWin=window.open('','_blank');
+  if(!reportWin){toast(uiLang==='af'?'Laat asseblief pop-ups toe om die verslag oop te maak.':'Please allow pop-ups to open the report.');return}
+  reportWin.document.write('<!doctype html><html><body style="font-family:Arial;padding:24px">Verslag word voorberei… / Preparing report…</body></html>');
   let r=await reportData();
 
   const isAf = uiLang==='af';
@@ -705,23 +1004,7 @@ async function printReport(){
     <td>${t.type==='expense'?esc(classLabel(t.classification)):''}</td>
   </tr>`).join('');
 
-  let frame=document.getElementById('reportPrintFrame');
-  if(!frame){
-    frame=document.createElement('iframe');
-    frame.id='reportPrintFrame';
-    frame.setAttribute('title','Biz Snapshot report');
-    frame.style.position='fixed';
-    frame.style.right='0';
-    frame.style.bottom='0';
-    frame.style.width='1px';
-    frame.style.height='1px';
-    frame.style.border='0';
-    frame.style.opacity='0';
-    frame.style.pointerEvents='none';
-    document.body.appendChild(frame);
-  }
-
-  let doc=frame.contentDocument||frame.contentWindow.document;
+  let doc=reportWin.document;
   doc.open();
   doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${tr('reportTitle')}</title><style>
     @page{size:landscape;margin:12mm}
@@ -796,8 +1079,7 @@ async function printReport(){
     </section>
   </body></html>`);
   doc.close();
-  frame.onload=()=>{setTimeout(()=>{frame.contentWindow.focus();frame.contentWindow.print()},80)};
-  setTimeout(()=>{try{frame.contentWindow.focus();frame.contentWindow.print()}catch(e){}},180);
+  setTimeout(()=>{try{reportWin.focus();reportWin.print()}catch(e){}},350);
 }
 function crc32(bytes){let c=0xffffffff;for(let b of bytes){c^=b;for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xedb88320:0)}return(c^0xffffffff)>>>0}
 function u16(n){return new Uint8Array([n&255,(n>>>8)&255])}function u32(n){return new Uint8Array([n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255])}
@@ -872,7 +1154,21 @@ function b64uEncode(bytes){let s='';for(let b of bytes)s+=String.fromCharCode(b)
 function b64uDecode(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';let bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
 function getDeviceId(){let id=localStorage.getItem('bizSnapshotDeviceId');if(!id){id=uid().replace(/-/g,'').toUpperCase();localStorage.setItem('bizSnapshotDeviceId',id)}return id}
 async function verifyLicense(token){try{let [p,s]=token.trim().split('.');if(!p||!s)return false;let payload=JSON.parse(new TextDecoder().decode(b64uDecode(p)));if(payload.product!=='Biz Snapshot SA'||payload.device!==getDeviceId())return false;let key=await crypto.subtle.importKey('jwk',PUBLIC_JWK,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,b64uDecode(s),new TextEncoder().encode(p))}catch(e){return false}}
-async function gate(){showLogin()}
+async function gate(){
+  const id=getDeviceId();
+  const dc=document.getElementById('deviceCode');
+  if(dc)dc.textContent=id;
+  const tok=localStorage.getItem('bizSnapshotLicense');
+  if(tok && await verifyLicense(tok)){
+    $('#activationView').classList.add('hidden');
+    $('#loginView').classList.remove('hidden');
+    return;
+  }
+  $('#appView').classList.add('hidden');
+  $('#loginView').classList.add('hidden');
+  $('#activationView').classList.remove('hidden');
+  applyLang();
+}
 function showLogin(){$('#activationView').classList.add('hidden');$('#loginView').classList.remove('hidden');applyLang()}
 async function activate(){let tok=$('#licenseInput').value.trim();if(await verifyLicense(tok)){localStorage.setItem('bizSnapshotLicense',tok);toast(tr('activationGood'));showLogin();await restoreSession()}else toast(tr('activationBad'))}
 
@@ -883,12 +1179,10 @@ async function restoreFromFirstScreen(file){
   let existing=await accountByName(business);
   if(existing){current=existing;normalizeAccount()}
   else{
-   let pw=prompt(uiLang==='af'?'Skep ’n plaaslike wagwoord vir hierdie besigheid op hierdie toestel (minimum 6 karakters):':'Create a local password for this business on this device (minimum 6 characters):');
-   if(pw===null)return;if(pw.length<6){toast(uiLang==='af'?'Gebruik asseblief minstens 6 karakters.':'Please use at least 6 characters.');return}
-   current={id:uid(),business,passwordHash:await hash(pw),sarsRate:Number(data.business.sarsRate??.25),givingRate:Number(data.business.givingRate??.10),givingBasis:data.business.givingBasis||'profit',language:data.business.language||uiLang,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||{}};
+   current={id:uid(),business,passwordHash:'',sarsRate:Number(data.business.sarsRate??.25),givingRate:Number(data.business.givingRate??.10),givingBasis:data.business.givingBasis||'profit',language:data.business.language||uiLang,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||{}};
    await put('accounts',current)
   }
-  localStorage.setItem('bizFriendlySession',current.id);
+  localStorage.setItem('bizFriendlySession',current.id);localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
   for(let n of ['transactions','months','receipts'])await deleteByAccount(n);
   for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});
   for(let mm of (data.months||[]))await put('months',{...mm,accountId:current.id});
@@ -900,13 +1194,21 @@ async function restoreFromFirstScreen(file){
 
 async function init(){db=await openDB();applyLang();$('#tabLogin').onclick=()=>showTab(true);$('#tabRegister').onclick=()=>showTab(false);$('#loginLang').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#regLanguage').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#loginForm').onsubmit=login;
 $('#firstRestoreBtn').onclick=()=>$('#firstRestoreFile').click();
-$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();
-$('#moveDeviceBtn').onclick=()=>moveDialog.showModal();
+$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',async()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`;await runOCR()}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();
+$('#moveDeviceBtn').onclick=backupData;
 $('#moveBackupBtn').onclick=backupData;
 $('#moveRestoreBtn').onclick=()=>$('#moveRestoreFile').click();
 $('#moveRestoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);
 $('#installHelpBtn').onclick=()=>{updateDeviceUXTexts();$('#installNowBtn').classList.toggle('hidden',!installPrompt);installHelpDialog.showModal()};
-$('#installNowBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installNowBtn').classList.add('hidden');$('#installBtn').classList.add('hidden')}};$('#printReportBtn').onclick=printReport;$('#csvReportBtn').onclick=downloadCSV;$('#zipReportBtn').onclick=bookkeeperPack;$('#logoutBtn').onclick=()=>{localStorage.removeItem('bizFriendlySession');location.reload()};$$('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());$('#copyDevice').onclick=async()=>{await navigator.clipboard.writeText(getDeviceId());toast(tr('copied'))};$('#activateBtn').onclick=activate;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn').classList.remove('hidden');$('#installNowBtn').classList.remove('hidden')});$('#installBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installBtn').classList.add('hidden')}};if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});await gate();if($('#activationView').classList.contains('hidden'))await restoreSession()}
+$('#installNowBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installNowBtn').classList.add('hidden');$('#installBtn').classList.add('hidden')}};$('#printReportBtn').onclick=printReport;$('#csvReportBtn').onclick=downloadCSV;$('#zipReportBtn').onclick=bookkeeperPack;$('#logoutBtn').onclick=()=>{};$$('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());$('#copyDevice').onclick=async()=>{await navigator.clipboard.writeText(getDeviceId());toast(tr('copied'))};$('#activateBtn').onclick=activate;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn').classList.remove('hidden');$('#installNowBtn').classList.remove('hidden')});$('#installBtn').onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installBtn').classList.add('hidden')}};if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});await gate();if($('#activationView').classList.contains('hidden')){let opened=await restoreSession();if(!opened){$('#loginView').classList.remove('hidden');$('#registerForm').classList.remove('hidden')}}}
+
+window.addEventListener('error',e=>{console.error('Biz Snapshot startup error',e.error||e.message)});
+window.addEventListener('unhandledrejection',e=>{console.error('Biz Snapshot promise error',e.reason)});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('SW registration skipped',e)));
+}
+
 init();
 </script>
 </body>
