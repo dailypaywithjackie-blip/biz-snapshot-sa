@@ -333,7 +333,7 @@ h2{font-size:clamp(22px,7vw,30px)!important}
     <p data-i18n="activationIntro">Aktiveer jou eenmalige aankoop om hierdie toestel te gebruik.</p>
     <label><span data-i18n="deviceCode">Jou toestel-kode</span><div id="deviceCode" class="device"></div></label>
     <button id="copyDevice" class="btn btn-soft full" type="button" data-i18n="copyCode">Kopieer toestel-kode</button>
-    <label><span data-i18n="activationKey">Aktiveringskode</span><textarea id="licenseInput" rows="4" placeholder="Plak jou aktiveringskode hier"></textarea></label>
+    <label><span>E-posadres waarmee jy Biz Snapshot SA gekoop het</span><input id="licenseInput" type="email" autocomplete="email" placeholder="jou@email.co.za" required></label>
     <button id="activateBtn" class="btn btn-primary full" type="button" data-i18n="activate">Aktiveer</button>
     <p class="micro" style="margin-top:15px" data-i18n="activationHelp">Betaal een keer. Geen maandelikse Biz Snapshot-fooi of credits nie. Jou aktivering is aan hierdie toestel/browser gekoppel.</p>
   </div>
@@ -1149,17 +1149,57 @@ function b64uDecode(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)
 function getDeviceId(){let id=localStorage.getItem('bizSnapshotDeviceId');if(!id){id=uid().replace(/-/g,'').toUpperCase();localStorage.setItem('bizSnapshotDeviceId',id)}return id}
 async function verifyLicense(token){try{let [p,s]=token.trim().split('.');if(!p||!s)return false;let payload=JSON.parse(new TextDecoder().decode(b64uDecode(p)));if(payload.product!=='Biz Snapshot SA'||payload.device!==getDeviceId())return false;let key=await crypto.subtle.importKey('jwk',PUBLIC_JWK,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,b64uDecode(s),new TextEncoder().encode(p))}catch(e){return false}}
 async function gate(){
-  let id=getDeviceId();
-  $('#deviceCode').textContent=id;
-  let tok=localStorage.getItem('bizSnapshotLicense');
-  if(tok&&await verifyLicense(tok)){showLogin();return true}
+  const deviceId=getDeviceId();
+  $('#deviceCode').textContent=deviceId;
+
+  const saved=localStorage.getItem('bizSnapshotLicense');
+
+  if(saved&&saved.startsWith('AUTO:')){
+    try{
+      const r=await fetch('https://biz-snapshot-license.dailypaywithjackie.workers.dev/verify',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({deviceId})
+      });
+      const data=await r.json();
+
+      if(data.ok&&data.activated){
+        showLogin();
+        await restoreSession();
+        return true;
+      }
+    }catch(e){}
+  }
+
   $('#activationView').classList.remove('hidden');
   $('#loginView').classList.add('hidden');
   applyLang();
-  return false
+  return false;
 }
 function showLogin(){$('#activationView').classList.add('hidden');$('#loginView').classList.remove('hidden');applyLang()}
-async function activate(){let tok=$('#licenseInput').value.trim();if(await verifyLicense(tok)){localStorage.setItem('bizSnapshotLicense',tok);toast(tr('activationGood'));showLogin();await restoreSession()}else toast(tr('activationBad'))}
+async function activate(){
+  const email=$('#licenseInput').value.trim().toLowerCase();
+  const deviceId=getDeviceId();
+  if(!email){toast('Vul asseblief jou aankoop-e-posadres in.');return}
+  try{
+    const r=await fetch('https://biz-snapshot-license.dailypaywithjackie.workers.dev/activate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,deviceId})
+    });
+    const data=await r.json();
+    if(data.ok&&data.activated){
+      localStorage.setItem('bizSnapshotLicense','AUTO:'+email);
+      toast('Aktivering suksesvol');
+      showLogin();
+      await restoreSession();
+    }else{
+      toast(data.error||'Aktivering kon nie bevestig word nie');
+    }
+  }catch(e){
+    toast('Aktivering kon nie bevestig word nie');
+  }
+}
 
 async function restoreFromFirstScreen(file){
  try{
