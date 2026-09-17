@@ -69,29 +69,6 @@ dialog{border:0;border-radius:24px;width:min(760px,94vw);padding:0;box-shadow:0 
   .top-actions{flex-wrap:wrap!important}
 }
 
-
-.bank-import-panel{margin-top:16px}
-.bank-import-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.bank-import-head h3{margin:0}
-.bank-import-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
-.reserve-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.reserve-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fffdfa}
-.reserve-card .reserve-title{font-weight:900;font-size:13px}
-.reserve-card .reserve-values{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.reserve-card .reserve-values span{font-size:10px;color:var(--muted);font-weight:800}
-.reserve-card .reserve-values strong{display:block;margin-top:4px;font-size:16px}
-.reserve-card .reserve-remaining{color:var(--sage-dark)}
-.bank-import-table{overflow:auto;margin-top:14px;border:1px solid var(--line);border-radius:15px}
-.bank-import-table table{min-width:900px}
-.bank-import-table select{padding:8px 9px;border-radius:10px}
-.import-type{font-weight:850;font-size:11px}
-.import-type.income{color:var(--sage-dark)}
-.import-type.expense{color:#9b4f4f}
-@media(max-width:700px){
-  .reserve-grid{grid-template-columns:1fr}
-  .reserve-card .reserve-values{grid-template-columns:1fr 1fr}
-  .bank-import-head .btn{width:100%}
-}
 </style>
 <style id="mobile-v6">
 @media(max-width:700px){
@@ -415,35 +392,6 @@ h2{font-size:clamp(22px,7vw,30px)!important}
     <div class="quick"><button id="quickIncome" class="btn btn-primary" data-i18n="addIncome">+ Geld In</button><button id="quickExpense" class="btn btn-primary" data-i18n="addExpense">− Uitgawe</button><button id="quickScan" class="btn btn-scan" data-i18n="scanReceipt">📷 Scan Strokie</button></div>
   </div>
   <div class="welcome"><div><strong id="welcomeTitle">Welkom terug</strong><span data-i18n="welcomeSub">Hier is wat in jou besigheid aangaan.</span></div><span class="pill good" data-i18n="localPill">Data bly op hierdie toestel</span></div>
-  <article class="panel bank-import-panel">
-    <div class="bank-import-head">
-      <div><h3 data-i18n="bankImportTitle">Bankstaat invoer</h3><p data-i18n="bankImportSub">Laai jou bankstaat as CSV op. Biz Snapshot trek die transaksies deur en jy kies net die regte kategorie.</p></div>
-      <button id="bankImportBtn" class="btn btn-primary" type="button" data-i18n="bankImportBtn">+ Laai bankstaat CSV op</button>
-    </div>
-  </article>
-  <article class="panel" style="margin-top:16px">
-    <div class="panel-head"><div><h3 data-i18n="reserveTitle">Tiende & SARS</h3><p data-i18n="reserveSub">Hou rekord van wat jy reeds betaal of eenkant gesit het. Die balans werk outomaties met nuwe inkomste by.</p></div></div>
-    <div class="reserve-grid">
-      <div class="reserve-card">
-        <div class="reserve-title" data-i18n="givingReserve">Tiende / Gee</div>
-        <div class="reserve-values">
-          <div><span data-i18n="planned">Beplan</span><strong id="givingDue">R0</strong></div>
-          <div><span data-i18n="alreadyPaid">Reeds betaal</span><strong id="givingPaid">R0</strong></div>
-          <div><span data-i18n="remaining">Oorbly</span><strong id="givingRemaining" class="reserve-remaining">R0</strong></div>
-        </div>
-        <button id="recordGivingBtn" class="btn btn-soft full" type="button" data-i18n="recordGiving">Rekord Tiende betaling</button>
-      </div>
-      <div class="reserve-card">
-        <div class="reserve-title" data-i18n="sarsReserve">SARS</div>
-        <div class="reserve-values">
-          <div><span data-i18n="planned">Beplan</span><strong id="sarsDue">R0</strong></div>
-          <div><span data-i18n="alreadyPaid">Reeds eenkant</span><strong id="sarsPaid">R0</strong></div>
-          <div><span data-i18n="remaining">Oorbly</span><strong id="sarsRemaining" class="reserve-remaining">R0</strong></div>
-        </div>
-        <button id="recordSarsBtn" class="btn btn-soft full" type="button" data-i18n="recordSars">Rekord SARS-betaling</button>
-      </div>
-    </div>
-  </article>
   <div class="stats">
     <article class="stat"><span data-i18n="moneyIn">Geld In</span><strong id="yearIncome">R0</strong><small data-i18n="receivedOnly">Werklik ontvang</small></article>
     <article class="stat"><span data-i18n="businessOut">Besigheid Uit</span><strong id="yearExpense">R0</strong><small data-i18n="businessOnly">Slegs besigheidsposte</small></article>
@@ -559,26 +507,6 @@ h2{font-size:clamp(22px,7vw,30px)!important}
   <p id="installHostedNote" class="micro" style="margin-top:12px">Home Screen-installasie werk op die live HTTPS-weergawe. ’n Plaaslike preview-lêer kan dit nie volledig demonstreer nie.</p>
 </div></dialog>
 
-
-<dialog id="bankImportDialog"><form id="bankImportForm" class="dialog-body">
-  <div class="dialog-head"><h3 data-i18n="bankImportTitle">Bankstaat invoer</h3><button type="button" class="close" data-close="bankImportDialog">×</button></div>
-  <p class="micro" data-i18n="bankImportHelp">Laai ’n CSV-bankstaat op. Die app probeer Datum, Beskrywing en Bedrag herken. Jy kan elke ry se kategorie en klassifikasie kies voordat jy dit stoor.</p>
-  <label class="receipt-box"><span data-i18n="chooseCsv">Kies CSV-bankstaat</span><input id="bankCsvFile" type="file" accept=".csv,text/csv" required></label>
-  <div id="bankImportStatus" class="notice" style="margin-top:12px"></div>
-  <div id="bankImportPreview" class="bank-import-table"></div>
-  <div class="dialog-actions"><button type="button" class="btn btn-soft" data-close="bankImportDialog" data-i18n="cancel">Kanselleer</button><button id="bankImportSaveBtn" class="btn btn-primary" type="submit" disabled data-i18n="importSave">Stoor geklassifiseerde transaksies</button></div>
-</form></dialog>
-
-<dialog id="reserveDialog"><form id="reserveForm" class="dialog-body">
-  <div class="dialog-head"><h3 id="reserveDialogTitle"></h3><button type="button" class="close" data-close="reserveDialog">×</button></div>
-  <input id="reserveType" type="hidden">
-  <label><span data-i18n="paymentDate">Datum</span><input id="reserveDate" type="date" required></label>
-  <label><span data-i18n="paymentAmount">Bedrag betaal / eenkant gesit</span><input id="reserveAmount" type="number" min="0.01" step="0.01" required></label>
-  <label><span data-i18n="paymentNote">Nota</span><textarea id="reserveNote" rows="2"></textarea></label>
-  <div id="reserveDialogNotice" class="notice"></div>
-  <div class="dialog-actions"><button type="button" class="btn btn-soft" data-close="reserveDialog" data-i18n="cancel">Kanselleer</button><button class="btn btn-primary" type="submit" data-i18n="save">Stoor</button></div>
-</form></dialog>
-
 <dialog id="reportDialog"><div class="dialog-body">
   <div class="dialog-head"><h3 data-i18n="reports">Verslae</h3><button type="button" class="close" data-close="reportDialog">×</button></div>
   <p class="micro" data-i18n="reportHelp">Gebruik hierdie uitvoere vir jou eie rekords of om vir jou boekhouer te stuur.</p>
@@ -597,8 +525,8 @@ let db,current=null,currentMonth=2,uiLang=localStorage.getItem('bizUILang')||'af
 const FY_MONTHS=[2,3,4,5,6,7,8,9,10,11,0,1];
 const M={af:['Januarie','Februarie','Maart','April','Mei','Junie','Julie','Augustus','September','Oktober','November','Desember'],en:['January','February','March','April','May','June','July','August','September','October','November','December']};
 const T={
-af:{activationIntro:'Aktiveer jou eenmalige aankoop om hierdie toestel te gebruik.',deviceCode:'Jou toestel-kode',copyCode:'Kopieer toestel-kode',activationKey:'Aktiveringskode',activate:'Aktiveer',activationHelp:'Betaal een keer. Geen maandelikse Biz Snapshot-fooi of credits nie. Jou aktivering is aan hierdie toestel/browser gekoppel.',tagline:'Eenvoudige geldrekords vir klein besighede — sonder accounting jargon.',login:'Maak op hierdie toestel oop',newBusiness:'Nuwe besigheid',businessName:'Besigheidsnaam',password:'Wagwoord',sarsRate:'SARS-beplanning %',givingRate:'Tiende / Gee %',givingBasis:'Bereken Tiende/Gee op',incomeBasis:'Inkomste',profitBasis:'Wins',createBusiness:'Skep my besigheid',localData:'Jou besigheidsdata en strokies bly op hierdie toestel/browser. Maak gereeld ’n rugsteun.',reports:'Verslae',install:'Installeer',settings:'Instellings',logout:'Uit',yearHeading:'Jou finansiële jaar',yearSub:'Maart tot Februarie — alles belangrik op een plek.',addIncome:'+ Geld In',addExpense:'− Uitgawe',scanReceipt:'📷 Scan Strokie',welcomeSub:'Hier is wat in jou besigheid aangaan.',localPill:'Data bly op hierdie toestel',moneyIn:'Geld In',receivedOnly:'Werklik ontvang',businessOut:'Besigheid Uit',businessOnly:'Slegs besigheidsposte',profit:'Wins',incomeMinusBusiness:'Inkomste minus besigheidsuitgawes',personal:'Persoonlik',excludedCalc:'Nie in Wins/SARS ingesluit nie',sarsPlanning:'SARS-beplanning',giving:'Tiende / Gee',outstandingSub:'Geld wat jy nog verwag.',uncertainSub:'Items wat nog geklassifiseer moet word.',sarsStill:'Tentatief nog vir SARS eenkant te sit.',marchFeb:'Maart tot Februarie',clickMonth:'Klik op ’n maand om alles vir daardie maand te sien.',sarsDisclaimer:'SARS-bedrae is slegs beplanningsramings en nie ’n belastingaanslag of belastingadvies nie.',year:'Jaar',outstanding:'Uitstaande',bankChecked:'Bank gekontroleer',moneyOut:'Geld Uit',incomeTableSub:'Wat jy verkoop het en wat jy ontvang het.',expenseTableSub:'Besigheid en persoonlike uitgawes bly duidelik apart.',receipts:'Strokies',receiptsSub:'Bewyse vir hierdie maand, op hierdie toestel gestoor.',bankCheckLabel:'Ek het my bankrekening gekontroleer',date:'Datum',category:'Kategorie',gross:'Bedrag vóór fooie',fees:'Fooie afgetrek',classification:'Klassifikasie',amount:'Bedrag',status:'Status',paymentMethod:'Betaalmetode',note:'Nota',receiptProof:'Strokie / bewys',receiptLocal:'Die lêer bly op hierdie toestel. Kies net ’n nuwe lêer as jy die bestaande een wil vervang.',cancel:'Kanselleer',save:'Stoor',scanReceiptTitle:'Scan strokie',scanBusinessOnly:'Scan Strokie is vir besigheidsuitgawes. Dit word nie as ’n persoonlike uitgawe gestoor nie.',takePhoto:'Neem foto / kies strokie',autoRead:'Probeer strokie outomaties lees',supplier:'Verskaffer',total:'Totaal',ocrNote:'Outomatiese lees gebruik ’n gratis browser-OCR biblioteek en benodig internet wanneer dit gelaai word. Handmatige vaslegging werk altyd en gebruik geen credits nie.',saveExpense:'Stoor uitgawe',sarsSetAside:'Reeds vir SARS eenkant gesit vir hierdie finansiële jaar',backupNotice:'Data is plaaslik. Maak gereeld ’n rugsteun, veral voordat jy browserdata uitvee of van toestel verander.',backup:'Maak rugsteun',restore:'Herstel rugsteun',reportHelp:'Gebruik hierdie uitvoere vir jou eie rekords of om vir jou boekhouer te stuur.',printPdf:'Druk / Stoor as PDF',downloadCsv:'Laai CSV af',bookkeeperPack:'Boekhouer-pakket (.zip)',includeReceipts:'Sluit strokies by Boekhouer-pakket in',yes:'Ja',no:'Nee',edit:'Wysig',delete:'Verwyder',clientSource:'Kliënt / bron',sold:'Wat verkoop?',payee:'Betaal aan',purpose:'Waarvoor?',noIncome:'Nog geen Geld In nie.',noExpense:'Nog geen Geld Uit nie.',noReceipts:'Nog geen strokies vir hierdie maand nie.',storedDevice:'Op hierdie toestel',received:'Ontvang',uncertain:'Onseker',paid:'Betaal',businessClass:'Vir die besigheid',personalClass:'Vir my / my huishouding',sarsClass:'Vir SARS eenkant gesit',uncertainClass:'Ek is nie seker nie',eft:'EFT',card:'Kaart',cash:'Kontant',other:'Ander',newIncome:'Voeg Geld In by',newExpense:'Voeg uitgawe by',editIncome:'Wysig Geld In',editExpense:'Wysig uitgawe',saved:'Gestoor.',updated:'Veranderinge gestoor.',deleted:'Transaksie verwyder.',confirmDelete:'Verwyder hierdie transaksie?',allGood:'Alles lyk reg',checkHere:'Kyk hierna',empty:'Nog leeg',monthsUsed:'maande in gebruik',notUsed:'Nog nie gebruik nie',outstandingWord:'uitstaande',uncertainItems:'onseker items',sarsRateCap:'van positiewe wins',givingIncomeCap:'van inkomste',givingProfitCap:'van positiewe wins',welcome:'Welkom terug',scanReading:'Ek lees die strokie…',scanDone:'Klaar — kyk net gou of die besonderhede reg lyk.',scanFail:'Ek kon nie die strokie outomaties lees nie. Vul die velde handmatig in.',chooseReceipt:'Kies eers ’n strokie.',scanSaved:'Strokie en besigheidsuitgawe gestoor.',backupDone:'Rugsteun afgelaai.',restoreConfirm:'Hierdie herstel vervang die huidige besigheid se transaksies en strokies op hierdie toestel. Gaan voort?',restoreDone:'Rugsteun herstel.',badBackup:'Daardie rugsteunlêer kon nie gelees word nie.',settingsSaved:'Instellings gestoor.',activationBad:'Daardie aktiveringskode is nie geldig vir hierdie toestel nie.',activationGood:'Aktivering suksesvol.',copied:'Toestel-kode gekopieer.',printBlocked:'Laat pop-ups vir hierdie webwerf toe om die verslag te druk.',reportTitle:'Biz Snapshot SA — Boekhouer-verslag',financialYear:'Finansiële jaar',personalNote:'Persoonlike uitgawes is nie by Wins of SARS-beplanning ingesluit nie.',sarsEstimate:'SARS-beplanning (raming)',givingLabel:'Tiende/Gee-beplanning',downloaded:'Aflaai gereed.',bankImportTitle:'Bankstaat invoer',bankImportSub:'Laai jou bankstaat as CSV op. Biz Snapshot trek die transaksies deur en jy kies net die regte kategorie.',bankImportBtn:'+ Laai bankstaat CSV op',bankImportHelp:'Laai ’n CSV-bankstaat op. Die app probeer Datum, Beskrywing en Bedrag herken. Jy kan elke ry se kategorie en klassifikasie kies voordat jy dit stoor.',chooseCsv:'Kies CSV-bankstaat',importSave:'Stoor geklassifiseerde transaksies',bankImportReady:'%s transaksies gevind. Gaan elke ry na en kies die regte kategorie.',bankImportSaved:'%s banktransaksies is gestoor.',bankImportNoRows:'Geen bruikbare transaksies kon uit hierdie CSV gelees word nie.',reserveTitle:'Tiende & SARS',reserveSub:'Hou rekord van wat jy reeds betaal of eenkant gesit het. Die balans werk outomaties met nuwe inkomste by.',givingReserve:'Tiende / Gee',sarsReserve:'SARS',planned:'Beplan',alreadyPaid:'Reeds betaal',remaining:'Oorbly',recordGiving:'Rekord Tiende betaling',recordSars:'Rekord SARS-betaling',paymentDate:'Datum',paymentAmount:'Bedrag betaal / eenkant gesit',paymentNote:'Nota',givingPaymentTitle:'Rekord Tiende / Gee betaling',sarsPaymentTitle:'Rekord SARS-betaling',paymentSaved:'Betaling gestoor.',paymentTooHigh:'Die bedrag is groter as die huidige bedrag wat nog benodig word.',incomeCategory:'Inkomste-kategorie',expenseCategory:'Uitgawe-kategorie',classification:'Klassifikasie',bankIncome:'Inkomste',bankExpense:'Uitgawe',plannedBalance:'Huidige balans',paidTotal:'Totaal reeds betaal',dueTotal:'Totaal beplan',incomeByCategory:'Inkomste per Kategorie',incomeByCategorySub:'Inkomste maand vir maand volgens kategorie, sodat jy kan sien waar die geld vandaan kom.',noIncomeCategories:'Geen ontvangde inkomste vir hierdie finansiële jaar nie.'},
-en:{activationIntro:'Activate your once-off purchase to use this device.',deviceCode:'Your device code',copyCode:'Copy device code',activationKey:'Activation code',activate:'Activate',activationHelp:'Pay once. No monthly Biz Snapshot fee or credits. Activation is linked to this device/browser.',tagline:'Simple money records for small businesses — without accounting jargon.',login:'Log in',newBusiness:'New business',businessName:'Business name',password:'Password',sarsRate:'SARS planning %',givingRate:'Giving / Tithe %',givingBasis:'Calculate Giving/Tithe on',incomeBasis:'Income',profitBasis:'Profit',createBusiness:'Create my business',localData:'Your business data and receipts stay on this device/browser. Make regular backups.',reports:'Reports',install:'Install',settings:'Settings',logout:'Log out',yearHeading:'Your financial year',yearSub:'March to February — everything important in one place.',addIncome:'+ Money In',addExpense:'− Expense',scanReceipt:'📷 Scan Receipt',welcomeSub:'Here is what is happening in your business.',localPill:'Data stays on this device',moneyIn:'Money In',receivedOnly:'Actually received',businessOut:'Business Out',businessOnly:'Business items only',profit:'Profit',incomeMinusBusiness:'Income minus business expenses',personal:'Personal',excludedCalc:'Not included in Profit/SARS',sarsPlanning:'SARS planning',giving:'Giving / Tithe',outstandingSub:'Money you are still expecting.',uncertainSub:'Items that still need classification.',sarsStill:'Estimated amount still to set aside for SARS.',marchFeb:'March to February',clickMonth:'Click a month to see everything for that month.',sarsDisclaimer:'SARS amounts are planning estimates only and are not a tax assessment or tax advice.',year:'Year',outstanding:'Outstanding',bankChecked:'Bank checked',moneyOut:'Money Out',incomeTableSub:'What you sold and what you received.',expenseTableSub:'Business and personal expenses stay clearly separate.',receipts:'Receipts',receiptsSub:'Proof for this month, stored on this device.',bankCheckLabel:'I checked my bank account',date:'Date',category:'Category',gross:'Amount before fees',fees:'Fees deducted',classification:'Classification',amount:'Amount',status:'Status',paymentMethod:'Payment method',note:'Note',receiptProof:'Receipt / proof',receiptLocal:'The file stays on this device. Choose a new file only if you want to replace the existing one.',cancel:'Cancel',save:'Save',scanReceiptTitle:'Scan receipt',scanBusinessOnly:'Scan Receipt is for business expenses. It will not be stored as a personal expense.',takePhoto:'Take photo / choose receipt',autoRead:'Try to read receipt automatically',supplier:'Supplier',total:'Total',ocrNote:'Automatic reading uses a free browser OCR library and needs internet when it loads. Manual capture always works and uses no credits.',saveExpense:'Save expense',sarsSetAside:'Already set aside for SARS for this financial year',backupNotice:'Data is local. Make regular backups, especially before clearing browser data or changing device.',backup:'Make backup',restore:'Restore backup',reportHelp:'Use these exports for your own records or to send to your bookkeeper.',printPdf:'Print / Save as PDF',downloadCsv:'Download CSV',bookkeeperPack:'Bookkeeper pack (.zip)',includeReceipts:'Include receipts in Bookkeeper pack',yes:'Yes',no:'No',edit:'Edit',delete:'Delete',clientSource:'Client / source',sold:'What was sold?',payee:'Paid to',purpose:'What for?',noIncome:'No Money In yet.',noExpense:'No Money Out yet.',noReceipts:'No receipts for this month yet.',storedDevice:'On this device',received:'Received',uncertain:'Uncertain',paid:'Paid',businessClass:'For the business',personalClass:'For me / my household',sarsClass:'Set aside for SARS',uncertainClass:'I am not sure',eft:'EFT',card:'Card',cash:'Cash',other:'Other',newIncome:'Add Money In',newExpense:'Add expense',editIncome:'Edit Money In',editExpense:'Edit expense',saved:'Saved.',updated:'Changes saved.',deleted:'Transaction deleted.',confirmDelete:'Delete this transaction?',allGood:'All looks good',checkHere:'Check this',empty:'Still empty',monthsUsed:'months in use',notUsed:'Not used yet',outstandingWord:'outstanding',uncertainItems:'uncertain items',sarsRateCap:'of positive profit',givingIncomeCap:'of income',givingProfitCap:'of positive profit',welcome:'Welcome back',scanReading:'Reading the receipt…',scanDone:'Done — please check that the details look right.',scanFail:'I could not read the receipt automatically. Fill in the fields manually.',chooseReceipt:'Choose a receipt first.',scanSaved:'Receipt and business expense saved.',backupDone:'Backup downloaded.',restoreConfirm:'This restore replaces the current business transactions and receipts on this device. Continue?',restoreDone:'Backup restored.',badBackup:'That backup file could not be read.',settingsSaved:'Settings saved.',activationBad:'That activation code is not valid for this device.',activationGood:'Activation successful.',copied:'Device code copied.',printBlocked:'Allow pop-ups for this website to print the report.',reportTitle:'Biz Snapshot SA — Bookkeeper Report',financialYear:'Financial year',personalNote:'Personal expenses are not included in Profit or SARS planning.',sarsEstimate:'SARS planning (estimate)',givingLabel:'Giving/Tithe planning',downloaded:'Download ready.',bankImportTitle:'Bank statement import',bankImportSub:'Upload your bank statement as CSV. Biz Snapshot pulls the transactions through and you only choose the right category.',bankImportBtn:'+ Upload bank statement CSV',bankImportHelp:'Upload a CSV bank statement. The app tries to recognise Date, Description and Amount. You can choose each row’s category and classification before saving.',chooseCsv:'Choose CSV bank statement',importSave:'Save classified transactions',bankImportReady:'%s transactions found. Review each row and choose the right category.',bankImportSaved:'%s bank transactions were saved.',bankImportNoRows:'No usable transactions could be read from this CSV.',reserveTitle:'Giving & SARS',reserveSub:'Keep track of what you have already paid or set aside. The balance automatically grows when new income comes in.',givingReserve:'Giving / Tithe',sarsReserve:'SARS',planned:'Planned',alreadyPaid:'Already paid',remaining:'Remaining',recordGiving:'Record Giving payment',recordSars:'Record SARS payment',paymentDate:'Date',paymentAmount:'Amount paid / set aside',paymentNote:'Note',givingPaymentTitle:'Record Giving / Tithe payment',sarsPaymentTitle:'Record SARS payment',paymentSaved:'Payment saved.',paymentTooHigh:'The amount is greater than the amount currently still required.',incomeCategory:'Income category',expenseCategory:'Expense category',classification:'Classification',bankIncome:'Income',bankExpense:'Expense',plannedBalance:'Current balance',paidTotal:'Total already paid',dueTotal:'Total planned',incomeByCategory:'Income by Category',incomeByCategorySub:'Income month by month by category, so you can see where the money comes from.',noIncomeCategories:'No received income for this financial year.'}
+af:{activationIntro:'Aktiveer jou eenmalige aankoop om hierdie toestel te gebruik.',deviceCode:'Jou toestel-kode',copyCode:'Kopieer toestel-kode',activationKey:'Aktiveringskode',activate:'Aktiveer',activationHelp:'Betaal een keer. Geen maandelikse Biz Snapshot-fooi of credits nie. Jou aktivering is aan hierdie toestel/browser gekoppel.',tagline:'Eenvoudige geldrekords vir klein besighede — sonder accounting jargon.',login:'Maak op hierdie toestel oop',newBusiness:'Nuwe besigheid',businessName:'Besigheidsnaam',password:'Wagwoord',sarsRate:'SARS-beplanning %',givingRate:'Tiende / Gee %',givingBasis:'Bereken Tiende/Gee op',incomeBasis:'Inkomste',profitBasis:'Wins',createBusiness:'Skep my besigheid',localData:'Jou besigheidsdata en strokies bly op hierdie toestel/browser. Maak gereeld ’n rugsteun.',reports:'Verslae',install:'Installeer',settings:'Instellings',logout:'Uit',yearHeading:'Jou finansiële jaar',yearSub:'Maart tot Februarie — alles belangrik op een plek.',addIncome:'+ Geld In',addExpense:'− Uitgawe',scanReceipt:'📷 Scan Strokie',welcomeSub:'Hier is wat in jou besigheid aangaan.',localPill:'Data bly op hierdie toestel',moneyIn:'Geld In',receivedOnly:'Werklik ontvang',businessOut:'Besigheid Uit',businessOnly:'Slegs besigheidsposte',profit:'Wins',incomeMinusBusiness:'Inkomste minus besigheidsuitgawes',personal:'Persoonlik',excludedCalc:'Nie in Wins/SARS ingesluit nie',sarsPlanning:'SARS-beplanning',giving:'Tiende / Gee',outstandingSub:'Geld wat jy nog verwag.',uncertainSub:'Items wat nog geklassifiseer moet word.',sarsStill:'Tentatief nog vir SARS eenkant te sit.',marchFeb:'Maart tot Februarie',clickMonth:'Klik op ’n maand om alles vir daardie maand te sien.',sarsDisclaimer:'SARS-bedrae is slegs beplanningsramings en nie ’n belastingaanslag of belastingadvies nie.',year:'Jaar',outstanding:'Uitstaande',bankChecked:'Bank gekontroleer',moneyOut:'Geld Uit',incomeTableSub:'Wat jy verkoop het en wat jy ontvang het.',expenseTableSub:'Besigheid en persoonlike uitgawes bly duidelik apart.',receipts:'Strokies',receiptsSub:'Bewyse vir hierdie maand, op hierdie toestel gestoor.',bankCheckLabel:'Ek het my bankrekening gekontroleer',date:'Datum',category:'Kategorie',gross:'Bedrag vóór fooie',fees:'Fooie afgetrek',classification:'Klassifikasie',amount:'Bedrag',status:'Status',paymentMethod:'Betaalmetode',note:'Nota',receiptProof:'Strokie / bewys',receiptLocal:'Die lêer bly op hierdie toestel. Kies net ’n nuwe lêer as jy die bestaande een wil vervang.',cancel:'Kanselleer',save:'Stoor',scanReceiptTitle:'Scan strokie',scanBusinessOnly:'Scan Strokie is vir besigheidsuitgawes. Dit word nie as ’n persoonlike uitgawe gestoor nie.',takePhoto:'Neem foto / kies strokie',autoRead:'Probeer strokie outomaties lees',supplier:'Verskaffer',total:'Totaal',ocrNote:'Outomatiese lees gebruik ’n gratis browser-OCR biblioteek en benodig internet wanneer dit gelaai word. Handmatige vaslegging werk altyd en gebruik geen credits nie.',saveExpense:'Stoor uitgawe',sarsSetAside:'Reeds vir SARS eenkant gesit vir hierdie finansiële jaar',backupNotice:'Data is plaaslik. Maak gereeld ’n rugsteun, veral voordat jy browserdata uitvee of van toestel verander.',backup:'Maak rugsteun',restore:'Herstel rugsteun',reportHelp:'Gebruik hierdie uitvoere vir jou eie rekords of om vir jou boekhouer te stuur.',printPdf:'Druk / Stoor as PDF',downloadCsv:'Laai CSV af',bookkeeperPack:'Boekhouer-pakket (.zip)',includeReceipts:'Sluit strokies by Boekhouer-pakket in',yes:'Ja',no:'Nee',edit:'Wysig',delete:'Verwyder',clientSource:'Kliënt / bron',sold:'Wat verkoop?',payee:'Betaal aan',purpose:'Waarvoor?',noIncome:'Nog geen Geld In nie.',noExpense:'Nog geen Geld Uit nie.',noReceipts:'Nog geen strokies vir hierdie maand nie.',storedDevice:'Op hierdie toestel',received:'Ontvang',uncertain:'Onseker',paid:'Betaal',businessClass:'Vir die besigheid',personalClass:'Vir my / my huishouding',sarsClass:'Vir SARS eenkant gesit',uncertainClass:'Ek is nie seker nie',eft:'EFT',card:'Kaart',cash:'Kontant',other:'Ander',newIncome:'Voeg Geld In by',newExpense:'Voeg uitgawe by',editIncome:'Wysig Geld In',editExpense:'Wysig uitgawe',saved:'Gestoor.',updated:'Veranderinge gestoor.',deleted:'Transaksie verwyder.',confirmDelete:'Verwyder hierdie transaksie?',allGood:'Alles lyk reg',checkHere:'Kyk hierna',empty:'Nog leeg',monthsUsed:'maande in gebruik',notUsed:'Nog nie gebruik nie',outstandingWord:'uitstaande',uncertainItems:'onseker items',sarsRateCap:'van positiewe wins',givingIncomeCap:'van inkomste',givingProfitCap:'van positiewe wins',welcome:'Welkom terug',scanReading:'Ek lees die strokie…',scanDone:'Klaar — kyk net gou of die besonderhede reg lyk.',scanFail:'Ek kon nie die strokie outomaties lees nie. Vul die velde handmatig in.',chooseReceipt:'Kies eers ’n strokie.',scanSaved:'Strokie en besigheidsuitgawe gestoor.',backupDone:'Rugsteun afgelaai.',restoreConfirm:'Hierdie herstel vervang die huidige besigheid se transaksies en strokies op hierdie toestel. Gaan voort?',restoreDone:'Rugsteun herstel.',badBackup:'Daardie rugsteunlêer kon nie gelees word nie.',settingsSaved:'Instellings gestoor.',activationBad:'Daardie aktiveringskode is nie geldig vir hierdie toestel nie.',activationGood:'Aktivering suksesvol.',copied:'Toestel-kode gekopieer.',printBlocked:'Laat pop-ups vir hierdie webwerf toe om die verslag te druk.',reportTitle:'Biz Snapshot SA — Boekhouer-verslag',financialYear:'Finansiële jaar',personalNote:'Persoonlike uitgawes is nie by Wins of SARS-beplanning ingesluit nie.',sarsEstimate:'SARS-beplanning (raming)',givingLabel:'Tiende/Gee-beplanning',downloaded:'Aflaai gereed.'},
+en:{activationIntro:'Activate your once-off purchase to use this device.',deviceCode:'Your device code',copyCode:'Copy device code',activationKey:'Activation code',activate:'Activate',activationHelp:'Pay once. No monthly Biz Snapshot fee or credits. Activation is linked to this device/browser.',tagline:'Simple money records for small businesses — without accounting jargon.',login:'Log in',newBusiness:'New business',businessName:'Business name',password:'Password',sarsRate:'SARS planning %',givingRate:'Giving / Tithe %',givingBasis:'Calculate Giving/Tithe on',incomeBasis:'Income',profitBasis:'Profit',createBusiness:'Create my business',localData:'Your business data and receipts stay on this device/browser. Make regular backups.',reports:'Reports',install:'Install',settings:'Settings',logout:'Log out',yearHeading:'Your financial year',yearSub:'March to February — everything important in one place.',addIncome:'+ Money In',addExpense:'− Expense',scanReceipt:'📷 Scan Receipt',welcomeSub:'Here is what is happening in your business.',localPill:'Data stays on this device',moneyIn:'Money In',receivedOnly:'Actually received',businessOut:'Business Out',businessOnly:'Business items only',profit:'Profit',incomeMinusBusiness:'Income minus business expenses',personal:'Personal',excludedCalc:'Not included in Profit/SARS',sarsPlanning:'SARS planning',giving:'Giving / Tithe',outstandingSub:'Money you are still expecting.',uncertainSub:'Items that still need classification.',sarsStill:'Estimated amount still to set aside for SARS.',marchFeb:'March to February',clickMonth:'Click a month to see everything for that month.',sarsDisclaimer:'SARS amounts are planning estimates only and are not a tax assessment or tax advice.',year:'Year',outstanding:'Outstanding',bankChecked:'Bank checked',moneyOut:'Money Out',incomeTableSub:'What you sold and what you received.',expenseTableSub:'Business and personal expenses stay clearly separate.',receipts:'Receipts',receiptsSub:'Proof for this month, stored on this device.',bankCheckLabel:'I checked my bank account',date:'Date',category:'Category',gross:'Amount before fees',fees:'Fees deducted',classification:'Classification',amount:'Amount',status:'Status',paymentMethod:'Payment method',note:'Note',receiptProof:'Receipt / proof',receiptLocal:'The file stays on this device. Choose a new file only if you want to replace the existing one.',cancel:'Cancel',save:'Save',scanReceiptTitle:'Scan receipt',scanBusinessOnly:'Scan Receipt is for business expenses. It will not be stored as a personal expense.',takePhoto:'Take photo / choose receipt',autoRead:'Try to read receipt automatically',supplier:'Supplier',total:'Total',ocrNote:'Automatic reading uses a free browser OCR library and needs internet when it loads. Manual capture always works and uses no credits.',saveExpense:'Save expense',sarsSetAside:'Already set aside for SARS for this financial year',backupNotice:'Data is local. Make regular backups, especially before clearing browser data or changing device.',backup:'Make backup',restore:'Restore backup',reportHelp:'Use these exports for your own records or to send to your bookkeeper.',printPdf:'Print / Save as PDF',downloadCsv:'Download CSV',bookkeeperPack:'Bookkeeper pack (.zip)',includeReceipts:'Include receipts in Bookkeeper pack',yes:'Yes',no:'No',edit:'Edit',delete:'Delete',clientSource:'Client / source',sold:'What was sold?',payee:'Paid to',purpose:'What for?',noIncome:'No Money In yet.',noExpense:'No Money Out yet.',noReceipts:'No receipts for this month yet.',storedDevice:'On this device',received:'Received',uncertain:'Uncertain',paid:'Paid',businessClass:'For the business',personalClass:'For me / my household',sarsClass:'Set aside for SARS',uncertainClass:'I am not sure',eft:'EFT',card:'Card',cash:'Cash',other:'Other',newIncome:'Add Money In',newExpense:'Add expense',editIncome:'Edit Money In',editExpense:'Edit expense',saved:'Saved.',updated:'Changes saved.',deleted:'Transaction deleted.',confirmDelete:'Delete this transaction?',allGood:'All looks good',checkHere:'Check this',empty:'Still empty',monthsUsed:'months in use',notUsed:'Not used yet',outstandingWord:'outstanding',uncertainItems:'uncertain items',sarsRateCap:'of positive profit',givingIncomeCap:'of income',givingProfitCap:'of positive profit',welcome:'Welcome back',scanReading:'Reading the receipt…',scanDone:'Done — please check that the details look right.',scanFail:'I could not read the receipt automatically. Fill in the fields manually.',chooseReceipt:'Choose a receipt first.',scanSaved:'Receipt and business expense saved.',backupDone:'Backup downloaded.',restoreConfirm:'This restore replaces the current business transactions and receipts on this device. Continue?',restoreDone:'Backup restored.',badBackup:'That backup file could not be read.',settingsSaved:'Settings saved.',activationBad:'That activation code is not valid for this device.',activationGood:'Activation successful.',copied:'Device code copied.',printBlocked:'Allow pop-ups for this website to print the report.',reportTitle:'Biz Snapshot SA — Bookkeeper Report',financialYear:'Financial year',personalNote:'Personal expenses are not included in Profit or SARS planning.',sarsEstimate:'SARS planning (estimate)',givingLabel:'Giving/Tithe planning',downloaded:'Download ready.'}
 };
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)], tr=k=>(T[uiLang]&&T[uiLang][k])||T.af[k]||k;
 const money=n=>new Intl.NumberFormat(uiLang==='af'?'af-ZA':'en-ZA',{style:'currency',currency:'ZAR'}).format(Number(n||0));
@@ -673,7 +601,7 @@ async function register(e){
   openApp()
 }
 async function login(e){e.preventDefault();}
-function normalizeAccount(){current.language=current.language||'af';current.givingBasis=current.givingBasis||'profit';current.sarsRate=Number(current.sarsRate??.25);current.givingRate=Number(current.givingRate??.10);current.setAside=Number(current.setAside||0);current.setAsideByFY=current.setAsideByFY||{};current.sarsPaidByFY=current.sarsPaidByFY||{...current.setAsideByFY};current.givingPaidByFY=current.givingPaidByFY||{}}
+function normalizeAccount(){current.language=current.language||'af';current.givingBasis=current.givingBasis||'profit';current.sarsRate=Number(current.sarsRate??.25);current.givingRate=Number(current.givingRate??.10);current.setAside=Number(current.setAside||0);current.setAsideByFY=current.setAsideByFY||{}}
 async function restoreSession(){
   try{
     let accounts=await all('accounts');
@@ -748,20 +676,13 @@ const bizExpense=t=>t.type==='expense'&&normClass(t.classification)==='business'
 const personalExpense=t=>t.type==='expense'&&normClass(t.classification)==='personal'?Number(t.amount||0):0;
 const outstanding=t=>t.type==='income'&&normStatus(t.status)==='outstanding'?Number(t.gross||0):0;
 const uncertain=t=>(t.type==='expense'&&normClass(t.classification)==='uncertain')||(normStatus(t.status)==='uncertain');
-function fyPaid(map){return Number((map&&map[fy()])||0)}
-function givingDueValue(inc,profit){return (current.givingBasis==='income'?inc:Math.max(0,profit))*current.givingRate}
-function sarsDueValue(profit){return Math.max(0,profit)*current.sarsRate}
-function givingPaidValue(){return fyPaid(current.givingPaidByFY)}
-function sarsPaidValue(){return fyPaid(current.sarsPaidByFY)}
-function givingRemainingValue(inc,profit){return Math.max(0,givingDueValue(inc,profit)-givingPaidValue())}
-function sarsRemainingValue(profit){return Math.max(0,sarsDueValue(profit)-sarsPaidValue())}
 function actualYearForMonth(m){return m>=2?fy():fy()+1}
 async function monthMeta(m){let ay=actualYearForMonth(m),id=`${current.id}_${ay}_${m}`,v=await rq(st('months').get(id));return v||{id,accountId:current.id,year:ay,month:m,bankChecked:false}}
 async function statsForMonth(m,allTx){let ay=actualYearForMonth(m),tx=allTx.filter(t=>tYear(t)===ay&&tMonth(t)===m),inc=tx.reduce((s,t)=>s+received(t),0),out=tx.reduce((s,t)=>s+bizExpense(t),0),personal=tx.reduce((s,t)=>s+personalExpense(t),0),profit=inc-out,sars=Math.max(0,profit)*current.sarsRate,givingBase=current.givingBasis==='income'?inc:Math.max(0,profit),giving=givingBase*current.givingRate,outs=tx.reduce((s,t)=>s+outstanding(t),0),unc=tx.filter(uncertain).length,meta=await monthMeta(m);return{tx,inc,out,personal,profit,sars,giving,outs,unc,bank:meta.bankChecked}}
 function monthStatus(s){if(!s.tx.length)return[tr('empty'),''];if(s.outs>0||s.unc>0||!s.bank)return[tr('checkHere'),'warn'];return[tr('allGood'),'good']}
-async function renderDashboard(){if(!current)return;normalizeAccount();$('#dashboardView').classList.remove('hidden');$('#monthView').classList.add('hidden');let tx=await byAccount('transactions'),ys=tx.filter(t=>fyOf(t)===fy()),inc=ys.reduce((s,t)=>s+received(t),0),out=ys.reduce((s,t)=>s+bizExpense(t),0),personal=ys.reduce((s,t)=>s+personalExpense(t),0),profit=inc-out,sars=sarsDueValue(profit),giving=givingDueValue(inc,profit),outs=ys.reduce((s,t)=>s+outstanding(t),0),unc=ys.filter(uncertain).length,givingPaid=givingPaidValue(),sarsPaid=sarsPaidValue(),givingRemaining=Math.max(0,giving-givingPaid),sarsRemaining=Math.max(0,sars-sarsPaid);
-$('#yearIncome').textContent=money(inc);$('#yearExpense').textContent=money(out);$('#yearPersonal').textContent=money(personal);$('#yearProfit').textContent=money(profit);$('#yearSars').textContent=money(sars);$('#yearGiving').textContent=money(giving);$('#sarsCaption').textContent=`${(current.sarsRate*100).toFixed(1)}% ${tr('sarsRateCap')}`;$('#givingCaption').textContent=`${(current.givingRate*100).toFixed(1)}% ${current.givingBasis==='income'?tr('givingIncomeCap'):tr('givingProfitCap')}`;$('#attentionOutstanding').textContent=`${money(outs)} ${tr('outstandingWord')}`;$('#attentionUncertain').textContent=`${unc} ${tr('uncertainItems')}`;$('#attentionSars').textContent=money(sarsRemaining);$('#givingDue').textContent=money(giving);$('#givingPaid').textContent=money(givingPaid);$('#givingRemaining').textContent=money(givingRemaining);$('#sarsDue').textContent=money(sars);$('#sarsPaid').textContent=money(sarsPaid);$('#sarsRemaining').textContent=money(sarsRemaining);
-lastDashboardInc=inc;lastDashboardProfit=profit;lastDashboardGivingRemaining=givingRemaining;lastDashboardSarsDue=sars;lastDashboardSarsRemaining=sarsRemaining;let html='',used=0;for(let m of FY_MONTHS){let s=await statsForMonth(m,tx),[status,cl]=monthStatus(s);if(s.tx.length)used++;html+=`<article class="month-card" data-month="${m}"><div class="month-top"><span class="month-name">${M[uiLang][m]}</span><span class="pill ${cl}">${status}</span></div><div class="month-profit">${money(s.profit)}</div><div class="month-lines"><div>${tr('moneyIn')}<strong>${money(s.inc)}</strong></div><div>${tr('businessOut')}<strong>${money(s.out)}</strong></div><div>${tr('personal')}<strong>${money(s.personal)}</strong></div><div>${tr('sarsPlanning')}<strong>${money(s.sars)}</strong></div><div>${tr('giving')}<strong>${money(s.giving)}</strong></div><div>${tr('outstanding')}<strong>${money(s.outs)}</strong></div></div></article>`}
+async function renderDashboard(){if(!current)return;$('#dashboardView').classList.remove('hidden');$('#monthView').classList.add('hidden');let tx=await byAccount('transactions'),ys=tx.filter(t=>fyOf(t)===fy()),inc=ys.reduce((s,t)=>s+received(t),0),out=ys.reduce((s,t)=>s+bizExpense(t),0),personal=ys.reduce((s,t)=>s+personalExpense(t),0),profit=inc-out,sars=Math.max(0,profit)*current.sarsRate,giving=(current.givingBasis==='income'?inc:Math.max(0,profit))*current.givingRate,outs=ys.reduce((s,t)=>s+outstanding(t),0),unc=ys.filter(uncertain).length;
+$('#yearIncome').textContent=money(inc);$('#yearExpense').textContent=money(out);$('#yearPersonal').textContent=money(personal);$('#yearProfit').textContent=money(profit);$('#yearSars').textContent=money(sars);$('#yearGiving').textContent=money(giving);$('#sarsCaption').textContent=`${(current.sarsRate*100).toFixed(1)}% ${tr('sarsRateCap')}`;$('#givingCaption').textContent=`${(current.givingRate*100).toFixed(1)}% ${current.givingBasis==='income'?tr('givingIncomeCap'):tr('givingProfitCap')}`;$('#attentionOutstanding').textContent=`${money(outs)} ${tr('outstandingWord')}`;$('#attentionUncertain').textContent=`${unc} ${tr('uncertainItems')}`;$('#attentionSars').textContent=money(Math.max(0,sars-Number((current.setAsideByFY&&current.setAsideByFY[fy()])??current.setAside??0)));
+let html='',used=0;for(let m of FY_MONTHS){let s=await statsForMonth(m,tx),[status,cl]=monthStatus(s);if(s.tx.length)used++;html+=`<article class="month-card" data-month="${m}"><div class="month-top"><span class="month-name">${M[uiLang][m]}</span><span class="pill ${cl}">${status}</span></div><div class="month-profit">${money(s.profit)}</div><div class="month-lines"><div>${tr('moneyIn')}<strong>${money(s.inc)}</strong></div><div>${tr('businessOut')}<strong>${money(s.out)}</strong></div><div>${tr('personal')}<strong>${money(s.personal)}</strong></div><div>${tr('sarsPlanning')}<strong>${money(s.sars)}</strong></div><div>${tr('giving')}<strong>${money(s.giving)}</strong></div><div>${tr('outstanding')}<strong>${money(s.outs)}</strong></div></div></article>`}
 $('#monthsGrid').innerHTML=html;$('#yearStatus').textContent=used?`${used}/12 ${tr('monthsUsed')}`:tr('notUsed');$$('.month-card').forEach(c=>c.onclick=()=>openMonth(Number(c.dataset.month)))}
 async function openMonth(m){currentMonth=m;$('#dashboardView').classList.add('hidden');$('#monthView').classList.remove('hidden');$('#monthTitle').textContent=M[uiLang][m];$('#monthSubtitle').textContent=`${actualYearForMonth(m)} · FY ${fy()}/${fy()+1}`;await renderMonth()}
 function classLabel(v){return {business:tr('businessClass'),personal:tr('personalClass'),sars:tr('sarsClass'),uncertain:tr('uncertainClass')}[normClass(v)]||v}
@@ -955,195 +876,8 @@ async function runOCR(){
 
 async function saveScan(e){e.preventDefault();let f=$('#scanFile').files[0];if(!f)return;let meta={supplier:$('#scanSupplier').value,date:$('#scanDate').value||dateForMonth(currentMonth),amount:Number($('#scanAmount').value||0),category:$('#scanCategory').value},rid=await saveReceipt(f,meta),t={id:uid(),accountId:current.id,type:'expense',date:meta.date,party:meta.supplier,purpose:uiLang==='af'?'Strokie geskandeer':'Receipt scanned',category:meta.category,classification:'business',amount:meta.amount,status:'paid',method:'Other',receiptId:rid,note:''};await put('transactions',t);scanDialog.close();toast(tr('scanSaved'));if(!$('#monthView').classList.contains('hidden'))await renderMonth();else await renderDashboard()}
 async function saveBank(){let m=await monthMeta(currentMonth);m.bankChecked=$('#bankChecked').checked;await put('months',m);await renderMonth()}
-
-let bankImportRows=[];
-function splitCsvLine(line,delimiter=','){
-  let out=[],cur='',quoted=false;
-  for(let i=0;i<line.length;i++){
-    let ch=line[i];
-    if(ch==='"'){
-      if(quoted && line[i+1]==='"'){cur+='"';i++;continue}
-      quoted=!quoted;continue;
-    }
-    if(ch===delimiter && !quoted){out.push(cur.trim());cur='';continue}
-    cur+=ch;
-  }
-  out.push(cur.trim());
-  return out;
-}
-function parseCsvText(text){
-  let clean=String(text||'').replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  let lines=clean.split('\n').filter(x=>x.trim()!=='');
-  if(!lines.length)return [];
-  let delimiter=(lines[0].split(';').length>lines[0].split(',').length)?';':',';
-  return lines.map(x=>splitCsvLine(x,delimiter));
-}
-function normHeader(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
-function parseBankAmount(v){
-  let x=String(v??'').trim();
-  if(!x)return 0;
-  let neg=/^\(.*\)$/.test(x)||/^-/.test(x);
-  x=x.replace(/[()RrZAR\s]/g,'').replace(/,/g,'');
-  let n=Number(x);
-  return Number.isFinite(n)?(neg?-Math.abs(n):n):0;
-}
-function parseBankDate(v){
-  let x=String(v||'').trim();
-  if(!x)return '';
-  let m=x.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if(m)return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
-  m=x.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
-  if(m)return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
-  let d=new Date(x);if(!Number.isNaN(d.getTime()))return d.toISOString().slice(0,10);
-  return '';
-}
-function bankHeaderIndex(headers,patterns){
-  return headers.findIndex(h=>patterns.some(p=>p.test(h)));
-}
-function guessBankCategory(description,type){
-  let v=String(description||'').toLowerCase();
-  if(type==='income'){
-    if(/salary|wage|payroll/.test(v))return uiLang==='af'?'Ander inkomste':'Other income';
-    if(/course|training|workshop/.test(v))return uiLang==='af'?'Kursus / Opleiding':'Course / Training';
-    if(/commission/.test(v))return uiLang==='af'?'Kommissie':'Commission';
-    if(/consult/.test(v))return uiLang==='af'?'Konsultasie':'Consulting';
-    if(/product|shop|sale|pos|card payment|eft credit/.test(v))return uiLang==='af'?'Produkte / Verkope':'Products / Sales';
-    return uiLang==='af'?'Dienste':'Services';
-  }
-  if(/fuel|petrol|diesel|engen|shell|bp/.test(v))return uiLang==='af'?'Brandstof / Reiskoste':'Fuel / Travel';
-  if(/rent|huur/.test(v))return uiLang==='af'?'Huur':'Rent';
-  if(/telkom|vodacom|mtn|internet|fibre|phone/.test(v))return uiLang==='af'?'Telefoon & Internet':'Phone & Internet';
-  if(/bank fee|service fee|charges|commission/.test(v))return uiLang==='af'?'Bankfooie':'Bank Fees';
-  if(/office|stationery/.test(v))return uiLang==='af'?'Kantoorbenodigdhede':'Office Supplies';
-  if(/marketing|facebook|meta|google ads/.test(v))return uiLang==='af'?'Bemarking / Advertising':'Marketing / Advertising';
-  if(/restaurant|cafe|coffee|takeaway|food/.test(v))return uiLang==='af'?'Etes / Vermaak':'Meals / Entertainment';
-  return uiLang==='af'?'Ander':'Other';
-}
-function bankCategoryOptions(type,selected){
-  let cats=(type==='income'?INCOME_CATEGORIES:EXPENSE_CATEGORIES)[uiLang==='af'?'af':'en'];
-  return cats.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
-}
-function renderBankImportPreview(){
-  let wrap=$('#bankImportPreview');
-  if(!bankImportRows.length){wrap.innerHTML='';$('#bankImportSaveBtn').disabled=true;return}
-  let head=`<thead><tr><th>${tr('date')}</th><th>${tr('purpose')}</th><th>${tr('amount')}</th><th>${tr('incomeCategory')}</th><th>${tr('classification')}</th></tr></thead>`;
-  let rows=bankImportRows.map((r,i)=>{
-    let type=r.amount>=0?'income':'expense';
-    let cat=type==='income'?r.category: r.category;
-    let cls=type==='expense'?(r.classification||'business'):'';
-    return `<tr>
-      <td>${esc(r.date)}</td>
-      <td>${esc(r.description)}</td>
-      <td class="money">${money(Math.abs(r.amount))}</td>
-      <td><select data-bank-cat="${i}">${bankCategoryOptions(type,cat)}</select></td>
-      <td>${type==='expense'?`<select data-bank-class="${i}"><option value="business" ${cls==='business'?'selected':''}>${esc(tr('businessClass'))}</option><option value="personal" ${cls==='personal'?'selected':''}>${esc(tr('personalClass'))}</option></select>`:`<span class="import-type income">${tr('bankIncome')}</span>`}</td>
-    </tr>`;
-  }).join('');
-  wrap.innerHTML=`<table><tbody>${head}${rows}</tbody></table>`;
-  $$('[data-bank-cat]').forEach(el=>el.onchange=()=>{bankImportRows[Number(el.dataset.bankCat)].category=el.value});
-  $$('[data-bank-class]').forEach(el=>el.onchange=()=>{bankImportRows[Number(el.dataset.bankClass)].classification=el.value});
-}
-function parseBankCsvRows(text){
-  let rows=parseCsvText(text);
-  if(rows.length<2)return [];
-  let headers=rows[0].map(normHeader);
-  let dateI=bankHeaderIndex(headers,[/date/,/datum/]);
-  let descI=bankHeaderIndex(headers,[/description/,/details/,/narrative/,/reference/,/payee/,/merchant/,/beskrywing/]);
-  let amountI=bankHeaderIndex(headers,[/^amount$/, /transaction amount/,/bedrag/]);
-  let debitI=bankHeaderIndex(headers,[/^debit$/, /debit amount/,/withdrawal/,/payment/]);
-  let creditI=bankHeaderIndex(headers,[/^credit$/, /credit amount/,/deposit/,/receipt/]);
-  if(dateI<0)dateI=0;
-  if(descI<0)descI=Math.min(1,headers.length-1);
-  let result=[];
-  for(let i=1;i<rows.length;i++){
-    let row=rows[i]; if(!row.length)continue;
-    let date=parseBankDate(row[dateI]);
-    let description=String(row[descI]||'').trim();
-    let amount=0;
-    if(amountI>=0) amount=parseBankAmount(row[amountI]);
-    else{
-      let debit=debitI>=0?Math.abs(parseBankAmount(row[debitI])):0;
-      let credit=creditI>=0?Math.abs(parseBankAmount(row[creditI])):0;
-      amount=credit-debit;
-    }
-    if(!date && !description)continue;
-    if(!amount)continue;
-    if(/opening balance|closing balance|available balance|beginning balance|ending balance/i.test(description))continue;
-    let type=amount>=0?'income':'expense';
-    result.push({id:uid(),date:date||dateForMonth(currentMonth),description,amount,category:guessBankCategory(description,type),classification:type==='expense'?'business':'',method:'EFT'});
-  }
-  return result;
-}
-function openBankImport(){bankImportRows=[];$('#bankCsvFile').value='';$('#bankImportPreview').innerHTML='';$('#bankImportStatus').textContent=uiLang==='af'?'Kies jou CSV-bankstaat om te begin.':'Choose your CSV bank statement to begin.';$('#bankImportSaveBtn').disabled=true;bankImportDialog.showModal()}
-async function saveBankImport(e){
-  e.preventDefault();
-  if(!bankImportRows.length)return;
-  for(let r of bankImportRows){
-    let type=r.amount>=0?'income':'expense';
-    let t={id:uid(),accountId:current.id,type,date:r.date,party:r.description,purpose:r.description,category:r.category,status:type==='income'?'received':'paid',note:uiLang==='af'?'Vanaf bankstaat ingevoer':'Imported from bank statement',receiptId:null};
-    if(type==='income'){t.gross=Math.abs(r.amount);t.fees=0}
-    else{t.amount=Math.abs(r.amount);t.classification=r.classification||'business';t.method=r.method||'EFT'}
-    await put('transactions',t);
-  }
-  let count=bankImportRows.length;
-  bankImportDialog.close();
-  bankImportRows=[];
-  toast((tr('bankImportSaved')).replace('%s',count));
-  await renderDashboard();
-}
-async function handleBankCsv(){
-  let f=$('#bankCsvFile').files[0];if(!f)return;
-  try{
-    let text=await f.text();
-    bankImportRows=parseBankCsvRows(text);
-    if(!bankImportRows.length){
-      $('#bankImportStatus').className='notice warn';
-      $('#bankImportStatus').textContent=tr('bankImportNoRows');
-      $('#bankImportPreview').innerHTML='';$('#bankImportSaveBtn').disabled=true;return;
-    }
-    $('#bankImportStatus').className='notice';
-    $('#bankImportStatus').textContent=(tr('bankImportReady')).replace('%s',bankImportRows.length);
-    renderBankImportPreview();
-  }catch(e){
-    console.error(e);
-    $('#bankImportStatus').className='notice warn';
-    $('#bankImportStatus').textContent=uiLang==='af'?'Ek kon nie hierdie CSV lees nie. Kontroleer dat dit ’n gewone CSV-bankstaat is.':'I could not read this CSV. Check that it is a standard CSV bank statement.';
-    $('#bankImportSaveBtn').disabled=true;
-  }
-}
-function openReserve(type){
-  $('#reserveType').value=type;
-  $('#reserveDialogTitle').textContent=type==='giving'?tr('givingPaymentTitle'):tr('sarsPaymentTitle');
-  $('#reserveDate').value=new Date().toISOString().slice(0,10);
-  $('#reserveAmount').value='';
-  $('#reserveNote').value='';
-  $('#reserveDialogNotice').textContent=type==='giving'
-    ? `${tr('planned')}: ${money(givingDueValue(lastDashboardInc||0,lastDashboardProfit||0))} · ${tr('remaining')}: ${money(lastDashboardGivingRemaining||0)}`
-    : `${tr('planned')}: ${money(lastDashboardSarsDue||0)} · ${tr('remaining')}: ${money(lastDashboardSarsRemaining||0)}`;
-  reserveDialog.showModal();
-}
-let lastDashboardInc=0,lastDashboardProfit=0,lastDashboardGivingRemaining=0,lastDashboardSarsDue=0,lastDashboardSarsRemaining=0;
-async function recordReservePayment(e){
-  e.preventDefault();
-  let type=$('#reserveType').value, amount=Number($('#reserveAmount').value||0);
-  if(!amount)return;
-  let due=type==='giving'?lastDashboardGivingRemaining:lastDashboardSarsRemaining;
-  if(amount>due+0.005){toast(tr('paymentTooHigh'));return}
-  let mapKey=type==='giving'?'givingPaidByFY':'sarsPaidByFY';
-  current[mapKey]=current[mapKey]||{};
-  current[mapKey][fy()]=Number(current[mapKey][fy()]||0)+amount;
-  if(type==='sars'){
-    current.setAsideByFY=current.setAsideByFY||{};
-    current.setAsideByFY[fy()]=current[mapKey][fy()];
-    current.setAside=current[mapKey][fy()];
-  }
-  await put('accounts',current);
-  reserveDialog.close();
-  toast(tr('paymentSaved'));
-  await renderDashboard();
-}
-function openSettings(){$('#settingsBusiness').value=current.business;$('#settingsSars').value=(current.sarsRate*100).toFixed(1);$('#settingsGiving').value=(current.givingRate*100).toFixed(1);$('#settingsGivingBasis').innerHTML=`<option value="income">${tr('incomeBasis')}</option><option value="profit">${tr('profitBasis')}</option>`;$('#settingsGivingBasis').value=current.givingBasis||'profit';$('#settingsLanguage').value=current.language||'af';normalizeAccount();$('#settingsSetAside').value=(current.sarsPaidByFY&&current.sarsPaidByFY[fy()])??(current.setAsideByFY&&current.setAsideByFY[fy()])??current.setAside??0;settingsDialog.showModal()}
-async function saveSettings(e){e.preventDefault();normalizeAccount();current.business=$('#settingsBusiness').value.trim()||current.business;current.sarsRate=Number($('#settingsSars').value||0)/100;current.givingRate=Number($('#settingsGiving').value||0)/100;current.givingBasis=$('#settingsGivingBasis').value;current.language=$('#settingsLanguage').value;current.setAsideByFY=current.setAsideByFY||{};current.sarsPaidByFY=current.sarsPaidByFY||{};current.sarsPaidByFY[fy()]=Number($('#settingsSetAside').value||0);current.setAsideByFY[fy()]=current.sarsPaidByFY[fy()];current.setAside=current.sarsPaidByFY[fy()];await put('accounts',current);uiLang=current.language;localStorage.setItem('bizUILang',uiLang);applyLang();settingsDialog.close();await renderDashboard();toast(tr('settingsSaved'))}
+function openSettings(){$('#settingsBusiness').value=current.business;$('#settingsSars').value=(current.sarsRate*100).toFixed(1);$('#settingsGiving').value=(current.givingRate*100).toFixed(1);$('#settingsGivingBasis').innerHTML=`<option value="income">${tr('incomeBasis')}</option><option value="profit">${tr('profitBasis')}</option>`;$('#settingsGivingBasis').value=current.givingBasis||'profit';$('#settingsLanguage').value=current.language||'af';$('#settingsSetAside').value=(current.setAsideByFY&&current.setAsideByFY[fy()])??current.setAside??0;settingsDialog.showModal()}
+async function saveSettings(e){e.preventDefault();current.business=$('#settingsBusiness').value.trim()||current.business;current.sarsRate=Number($('#settingsSars').value||0)/100;current.givingRate=Number($('#settingsGiving').value||0)/100;current.givingBasis=$('#settingsGivingBasis').value;current.language=$('#settingsLanguage').value;current.setAsideByFY=current.setAsideByFY||{};current.setAsideByFY[fy()]=Number($('#settingsSetAside').value||0);current.setAside=current.setAsideByFY[fy()];await put('accounts',current);uiLang=current.language;localStorage.setItem('bizUILang',uiLang);applyLang();settingsDialog.close();await renderDashboard();toast(tr('settingsSaved'))}
 function blobToDataURL(blob){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob)})}
 function dataURLtoBlob(s){let [head,b64]=s.split(','),type=(head.match(/data:(.*?);base64/)||[])[1]||'application/octet-stream',bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type})}
 async function backupData(){
@@ -1158,7 +892,7 @@ async function backupData(){
     m=m.map(x=>({...x,accountId:current.id}));
 
     let data={version:6,product:'Biz Snapshot SA',exportedAt:new Date().toISOString(),
-      business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{},sarsPaidByFY:current.sarsPaidByFY||{},givingPaidByFY:current.givingPaidByFY||{}},
+      business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{}},
       transactions:tx,months:m,receipts};
 
     let json=JSON.stringify(data,null,2);
@@ -1182,10 +916,10 @@ async function backupData(){
   }
 }
 async function deleteByAccount(store){let items=await byAccount(store);for(let x of items)await del(store,x.id)}
-async function restoreData(file){try{let data=JSON.parse(await file.text());if(!data||!Array.isArray(data.transactions))throw 0;if(!confirm(tr('restoreConfirm')))return;for(let n of ['transactions','months','receipts'])await deleteByAccount(n);for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});for(let m of (data.months||[]))await put('months',{...m,accountId:current.id});for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}if(data.business){Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{},sarsPaidByFY:data.business.sarsPaidByFY||data.business.setAsideByFY||current.sarsPaidByFY||{},givingPaidByFY:data.business.givingPaidByFY||current.givingPaidByFY||{}});await put('accounts',current);uiLang=current.language;applyLang()}if(settingsDialog.open)settingsDialog.close();if(moveDialog.open)moveDialog.close();await renderDashboard();toast(tr('restoreDone'))}catch(e){console.error(e);toast(tr('badBackup'))}}
+async function restoreData(file){try{let data=JSON.parse(await file.text());if(!data||!Array.isArray(data.transactions))throw 0;if(!confirm(tr('restoreConfirm')))return;for(let n of ['transactions','months','receipts'])await deleteByAccount(n);for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});for(let m of (data.months||[]))await put('months',{...m,accountId:current.id});for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}if(data.business){Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{}});await put('accounts',current);uiLang=current.language;applyLang()}if(settingsDialog.open)settingsDialog.close();if(moveDialog.open)moveDialog.close();await renderDashboard();toast(tr('restoreDone'))}catch(e){console.error(e);toast(tr('badBackup'))}}
 function safeName(s){return String(s||'Biz-Snapshot').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}
 function csvCell(v){let s=String(v??'');return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s}
-async function reportData(){let tx=(await byAccount('transactions')).filter(t=>fyOf(t)===fy()).sort((a,b)=>(a.date||'').localeCompare(b.date||'')),inc=tx.reduce((s,t)=>s+received(t),0),out=tx.reduce((s,t)=>s+bizExpense(t),0),personal=tx.reduce((s,t)=>s+personalExpense(t),0),profit=inc-out,sars=sarsDueValue(profit),giving=givingDueValue(inc,profit),sarsPaid=sarsPaidValue(),givingPaid=givingPaidValue();return{tx,inc,out,personal,profit,sars,giving,sarsPaid,givingPaid,sarsRemaining:Math.max(0,sars-sarsPaid),givingRemaining:Math.max(0,giving-givingPaid),outs:tx.reduce((s,t)=>s+outstanding(t),0)}}
+async function reportData(){let tx=(await byAccount('transactions')).filter(t=>fyOf(t)===fy()).sort((a,b)=>(a.date||'').localeCompare(b.date||'')),inc=tx.reduce((s,t)=>s+received(t),0),out=tx.reduce((s,t)=>s+bizExpense(t),0),personal=tx.reduce((s,t)=>s+personalExpense(t),0),profit=inc-out,sars=Math.max(0,profit)*current.sarsRate,giving=(current.givingBasis==='income'?inc:Math.max(0,profit))*current.givingRate;return{tx,inc,out,personal,profit,sars,giving,outs:tx.reduce((s,t)=>s+outstanding(t),0)}}
 function txRowsCSV(tx){let head=['Date','Type','Client / Payee','Description','Category','Gross','Fees','Amount','Status','Classification','Payment Method','Receipt','Note'],rows=tx.map(t=>[t.date,t.type,t.party,t.purpose,t.category,t.gross??'',t.fees??'',t.amount??'',statusLabel(t.status),t.type==='expense'?classLabel(t.classification):'',t.method||'',t.receiptId?'Yes':'No',t.note||'']);return [head,...rows].map(r=>r.map(csvCell).join(',')).join('\r\n')}
 async function downloadCSV(){
   let name=`${safeName(current.business)}-FY-${fy()}-${fy()+1}.csv`,handle=null;
@@ -1250,21 +984,6 @@ async function printReport(){
     </section>`;
   }
 
-  function incomeCategoryMatrix(){
-    let map=new Map();
-    for(let t of r.tx){
-      if(t.type!=='income' || normStatus(t.status)!=='received') continue;
-      let cat=String(t.category||'').trim() || (isAf?'Ander inkomste':'Other income');
-      if(!map.has(cat)) map.set(cat,{cat,total:0,months:Object.fromEntries(fiscalMonths.map(x=>[x.n,0]))});
-      let row=map.get(cat), val=received(t);
-      row.total+=val;
-      let mm=monthOf(t);
-      if(mm && row.months[mm]!==undefined) row.months[mm]+=val;
-    }
-    return [...map.values()].sort((a,b)=>b.total-a.total);
-  }
-
-  let incomeCats=incomeCategoryMatrix();
   let businessCats=categoryMatrix('business');
   let personalCats=categoryMatrix('personal');
 
@@ -1322,17 +1041,7 @@ async function printReport(){
       <div class="s">${tr('personal')}<b>${money(r.personal)}</b></div>
       <div class="s">${tr('sarsEstimate')}<b>${money(r.sars)}</b></div>
       <div class="s">${tr('givingLabel')}<b>${money(r.giving)}</b></div>
-      <div class="s">${isAf?'Tiende reeds betaal':'Giving already paid'}<b>${money(r.givingPaid)}</b></div>
-      <div class="s">${isAf?'Tiende oor':'Giving remaining'}<b>${money(r.givingRemaining)}</b></div>
-      <div class="s">${isAf?'SARS reeds eenkant':'SARS already set aside'}<b>${money(r.sarsPaid)}</b></div>
-      <div class="s">${isAf?'SARS oor':'SARS remaining'}<b>${money(r.sarsRemaining)}</b></div>
     </div>
-
-    ${matrixHTML(
-      incomeCats,
-      isAf?'Inkomste per Kategorie — maand vir maand':'Income by Category — month by month',
-      tr('noIncomeCategories')
-    )}
 
     ${matrixHTML(
       businessCats,
@@ -1499,7 +1208,7 @@ async function restoreFromFirstScreen(file){
   let existing=await accountByName(business);
   if(existing){current=existing;normalizeAccount()}
   else{
-   current={id:uid(),business,passwordHash:'',sarsRate:Number(data.business.sarsRate??.25),givingRate:Number(data.business.givingRate??.10),givingBasis:data.business.givingBasis||'profit',language:data.business.language||uiLang,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||{},sarsPaidByFY:data.business.sarsPaidByFY||data.business.setAsideByFY||{},givingPaidByFY:data.business.givingPaidByFY||{}};
+   current={id:uid(),business,passwordHash:'',sarsRate:Number(data.business.sarsRate??.25),givingRate:Number(data.business.givingRate??.10),givingBasis:data.business.givingBasis||'profit',language:data.business.language||uiLang,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||{}};
    await put('accounts',current)
   }
   localStorage.setItem('bizFriendlySession',current.id);localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
@@ -1507,14 +1216,14 @@ async function restoreFromFirstScreen(file){
   for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});
   for(let mm of (data.months||[]))await put('months',{...mm,accountId:current.id});
   for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}
-  Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{},sarsPaidByFY:data.business.sarsPaidByFY||data.business.setAsideByFY||current.sarsPaidByFY||{},givingPaidByFY:data.business.givingPaidByFY||current.givingPaidByFY||{}});
+  Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{}});
   await put('accounts',current);openApp();toast(uiLang==='af'?'Jou Biz Snapshot is op hierdie toestel herstel.':'Your Biz Snapshot has been restored on this device.')
  }catch(e){console.error(e);toast(uiLang==='af'?'Hierdie lyk nie soos ’n geldige Biz Snapshot-backup nie.':'This does not look like a valid Biz Snapshot backup.')}
 }
 
 async function init(){db=await openDB();applyLang();$('#tabLogin').onclick=()=>showTab(true);$('#tabRegister').onclick=()=>showTab(false);$('#loginLang').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#regLanguage').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#loginForm').onsubmit=login;
 $('#firstRestoreBtn').onclick=()=>$('#firstRestoreFile').click();
-$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',async()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`;await runOCR()}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();$('#bankImportBtn').onclick=openBankImport;$('#bankCsvFile').onchange=handleBankCsv;$('#bankImportForm').onsubmit=saveBankImport;$('#recordGivingBtn').onclick=()=>openReserve('giving');$('#recordSarsBtn').onclick=()=>openReserve('sars');$('#reserveForm').onsubmit=recordReservePayment;
+$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',async()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`;await runOCR()}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();
 $('#moveDeviceBtn').onclick=backupData;
 $('#moveBackupBtn').onclick=backupData;
 $('#moveRestoreBtn').onclick=()=>$('#moveRestoreFile').click();
