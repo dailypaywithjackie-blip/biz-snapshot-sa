@@ -567,7 +567,7 @@ h2{font-size:clamp(22px,7vw,30px)!important}
   <div id="bankImportStatus" class="notice" style="margin-top:12px"></div>
   <div id="bankImportPreview" class="bank-import-table"></div>
   <div class="dialog-actions"><button type="button" class="btn btn-soft" data-close="bankImportDialog" data-i18n="cancel">Kanselleer</button><button id="bankImportSaveBtn" class="btn btn-primary" type="submit" data-i18n="importSave">Stoor geklassifiseerde transaksies</button></div>
-  "c</form></dialog>
+ </form></dialog>
 
 <dialog id="reserveDialog"><form id="reserveForm" class="dialog-body">
   <div class="dialog-head"><h3 id="reserveDialogTitle"></h3><button type="button" class="close" data-close="reserveDialog">×</button></div>
@@ -1028,26 +1028,66 @@ function bankCategoryOptions(type,selected){
   return cats.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
 }
 function renderBankImportPreview(){
-  let wrap=$('#bankImportPreview');
-  if(!bankImportRows.length){wrap.innerHTML='';$('#bankImportSaveBtn').disabled=true;return}
-  $('#bankImportSaveBtn').disabled=false;
+  const wrap=$('#bankImportPreview');
 
-  let head=`<thead><tr><th>${tr('date')}</th><th>${tr('purpose')}</th><th>${tr('amount')}</th><th>${tr('incomeCategory')}</th><th>${tr('classification')}</th></tr></thead>`;
-  let rows=bankImportRows.map((r,i)=>{
-    let type=r.amount>=0?'income':'expense';
-    let cat=type==='income'?r.category: r.category;
-    let cls=type==='expense'?(r.classification||'business'):'';
-    return `<tr>
-      <td>${esc(r.date)}</td>
-      <td>${esc(r.description)}</td>
-      <td class="money">${money(Math.abs(r.amount))}</td>
-      <td><select data-bank-cat="${i}">${bankCategoryOptions(type,cat)}</select></td>
-      <td>${type==='expense'?`<select data-bank-class="${i}"><option value="business" ${cls==='business'?'selected':''}>${esc(tr('businessClass'))}</option><option value="personal" ${cls==='personal'?'selected':''}>${esc(tr('personalClass'))}</option></select>`:`<span class="import-type income">${tr('bankIncome')}</span>`}</td>
-    </tr>`;
+  if(!bankImportRows.length){
+    wrap.innerHTML='';
+    return;
+  }
+
+  const head=`
+    <thead>
+      <tr>
+        <th>${tr('date')}</th>
+        <th>${tr('purpose')}</th>
+        <th>${tr('amount')}</th>
+        <th>${tr('incomeCategory')}</th>
+        <th>${tr('classification')}</th>
+      </tr>
+    </thead>`;
+
+  const rows=bankImportRows.map((r,i)=>{
+    const type=Number(r.amount)>=0?'income':'expense';
+    const cat=r.category;
+    const cls=type==='expense'?(r.classification||'business'):'';
+
+    return `
+      <tr>
+        <td>${esc(r.date)}</td>
+        <td>${esc(r.description)}</td>
+        <td class="money">${money(Math.abs(Number(r.amount)||0))}</td>
+        <td>
+          <select data-bank-cat="${i}">
+            ${bankCategoryOptions(type,cat)}
+          </select>
+        </td>
+        <td>
+          ${
+            type==='expense'
+              ? `<select data-bank-class="${i}">
+                   <option value="business" ${cls==='business'?'selected':''}>${esc(tr('businessClass'))}</option>
+                   <option value="personal" ${cls==='personal'?'selected':''}>${esc(tr('personalClass'))}</option>
+                 </select>`
+              : `<span class="import-type income">${tr('bankIncome')}</span>`
+          }
+        </td>
+      </tr>`;
   }).join('');
-  wrap.innerHTML=`<table><tbody>${head}${rows}</tbody></table>`;
-  $$('[data-bank-cat]').forEach(el=>el.onchange=()=>{bankImportRows[Number(el.dataset.bankCat)].category=el.value});
-  $$('[data-bank-class]').forEach(el=>el.onchange=()=>{bankImportRows[Number(el.dataset.bankClass)].classification=el.value});
+
+  wrap.innerHTML=`<table>${head}<tbody>${rows}</tbody></table>`;
+
+  $$('[data-bank-cat]').forEach(el=>{
+    el.onchange=()=>{
+      bankImportRows[Number(el.dataset.bankCat)].category=el.value;
+    };
+  });
+
+  $$('[data-bank-class]').forEach(el=>{
+    el.onchange=()=>{
+      bankImportRows[Number(el.dataset.bankClass)].classification=el.value;
+    };
+  });
+}
 }
 function parseBankCsvRows(text){
   let rows=parseCsvText(text);
