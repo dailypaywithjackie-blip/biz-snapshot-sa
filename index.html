@@ -1030,6 +1030,7 @@ function bankCategoryOptions(type,selected){
 function renderBankImportPreview(){
   let wrap=$('#bankImportPreview');
   if(!bankImportRows.length){wrap.innerHTML='';$('#bankImportSaveBtn').disabled=true;return}
+  $('#bankImportSaveBtn').disabled=false;
   let head=`<thead><tr><th>${tr('date')}</th><th>${tr('purpose')}</th><th>${tr('amount')}</th><th>${tr('incomeCategory')}</th><th>${tr('classification')}</th></tr></thead>`;
   let rows=bankImportRows.map((r,i)=>{
     let type=r.amount>=0?'income':'expense';
