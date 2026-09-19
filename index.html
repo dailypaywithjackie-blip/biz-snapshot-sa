@@ -1021,6 +1021,10 @@ function guessBankCategory(description,type){
 }
 function bankCategoryOptions(type,selected){
   let cats=(type==='income'?INCOME_CATEGORIES:EXPENSE_CATEGORIES)[uiLang==='af'?'af':'en'];
+
+
+
+  
   return cats.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
 }
 function renderBankImportPreview(){
@@ -1077,19 +1081,73 @@ function parseBankCsvRows(text){
 function openBankImport(){bankImportRows=[];$('#bankCsvFile').value='';$('#bankImportPreview').innerHTML='';$('#bankImportStatus').textContent=uiLang==='af'?'Kies jou CSV-bankstaat om te begin.':'Choose your CSV bank statement to begin.';$('#bankImportSaveBtn').disabled=true;bankImportDialog.showModal()}
 async function saveBankImport(e){
   e.preventDefault();
-  if(!bankImportRows.length)return;
-  for(let r of bankImportRows){
-    let type=r.amount>=0?'income':'expense';
-    let t={id:uid(),accountId:current.id,type,date:r.date,party:r.description,purpose:r.description,category:r.category,status:type==='income'?'received':'paid',note:uiLang==='af'?'Vanaf bankstaat ingevoer':'Imported from bank statement',receiptId:null};
-    if(type==='income'){t.gross=Math.abs(r.amount);t.fees=0}
-    else{t.amount=Math.abs(r.amount);t.classification=r.classification||'business';t.method=r.method||'EFT'}
-    await put('transactions',t);
+
+  if(!bankImportRows.length){
+    $('#bankImportStatus').className='notice warn';
+    $('#bankImportStatus').textContent=uiLang==='af'
+      ? 'Daar is geen transaksies om te stoor nie.'
+      : 'There are no transactions to save.';
+    return;
   }
-  let count=bankImportRows.length;
-  bankImportDialog.close();
-  bankImportRows=[];
-  toast((tr('bankImportSaved')).replace('%s',count));
-  await renderDashboard();
+
+  const btn=$('#bankImportSaveBtn');
+  btn.disabled=true;
+
+  try{
+    let saved=0;
+
+    for(const r of bankImportRows){
+      const type=Number(r.amount)>=0?'income':'expense';
+
+      const t={
+        id:uid(),
+        accountId:current.id,
+        type:type,
+        date:r.date||dateForMonth(currentMonth),
+        party:String(r.description||'').trim(),
+        purpose:String(r.description||'').trim(),
+        category:r.category||'Other',
+        status:type==='income'?'received':'paid',
+        note:uiLang==='af'
+          ? 'Vanaf bankstaat ingevoer'
+          : 'Imported from bank statement'
+      };
+
+      if(type==='income'){
+        t.gross=Math.abs(Number(r.amount)||0);
+        t.fees=0;
+      }else{
+        t.amount=Math.abs(Number(r.amount)||0);
+        t.classification=r.classification||'business';
+        t.method=r.method||'EFT';
+      }
+
+      await put('transactions',t);
+      saved++;
+    }
+
+    bankImportRows=[];
+
+    bankImportDialog.close();
+
+    await renderDashboard();
+
+    toast(
+      uiLang==='af'
+        ? `${saved} banktransaksies is gestoor.`
+        : `${saved} bank transactions were saved.`
+    );
+
+  }catch(err){
+    console.error('Bank import save error:',err);
+
+    $('#bankImportStatus').className='notice warn';
+    $('#bankImportStatus').textContent=uiLang==='af'
+      ? `Die transaksies kon nie gestoor word nie: ${err?.message||err}`
+      : `The transactions could not be saved: ${err?.message||err}`;
+
+    btn.disabled=false;
+  }
 }
 async function handleBankCsv(){
   let f=$('#bankCsvFile').files[0];if(!f)return;
