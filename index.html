@@ -1159,7 +1159,7 @@ async function handleBankCsv(){
       $('#bankImportStatus').className='notice warn';
       $('#bankImportStatus').textContent=tr('bankImportNoRows');
       $('#bankImportPreview').innerHTML='';$('#bankImportSaveBtn').disabled=true;return;
-    }
+    $('#bankImportSaveBtn').disabled=false;
     $('#bankImportStatus').className='notice';
     $('#bankImportStatus').textContent=(tr('bankImportReady')).replace('%s',bankImportRows.length);
     renderBankImportPreview();
