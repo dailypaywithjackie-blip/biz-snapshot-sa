@@ -566,7 +566,7 @@ h2{font-size:clamp(22px,7vw,30px)!important}
   <label class="receipt-box"><span data-i18n="chooseCsv">Kies CSV-bankstaat</span><input id="bankCsvFile" type="file" accept=".csv,text/csv" required></label>
   <div id="bankImportStatus" class="notice" style="margin-top:12px"></div>
   <div id="bankImportPreview" class="bank-import-table"></div>
-  <div class="dialog-actions"><button type="button" class="btn btn-soft" data-close="bankImportDialog" data-i18n="cancel">Kanselleer</button><button id="bankImportSaveBtn" class="btn btn-primary" type="submit" data-i18n="importSave">Stoor geklassifiseerde transaksies</button></div>
+ <div class="dialog-actions"><button type="button" class="btn btn-soft" data-close="bankImportDialog" data-i18n="cancel">Kanselleer</button><button id="bankImportSaveBtn" class="btn btn-primary" type="button" data-i18n="importSave">Stoor geklassifiseerde transaksies</button></div>
  </form></dialog>
 
 <dialog id="reserveDialog"><form id="reserveForm" class="dialog-body">
@@ -1120,26 +1120,39 @@ function parseBankCsvRows(text){
   }
   return result;
 }
-function openBankImport(){bankImportRows=[];$('#bankCsvFile').value='';$('#bankImportPreview').innerHTML='';$('#bankImportStatus').textContent=uiLang==='af'?'Kies jou CSV-bankstaat om te begin.':'Choose your CSV bank statement to begin.';$('#bankImportSaveBtn').disabled=true;bankImportDialog.showModal()}
+function openBankImport(){
+  bankImportRows=[];
+
+  $('#bankCsvFile').value='';
+  $('#bankImportPreview').innerHTML='';
+
+  $('#bankImportStatus').className='notice';
+  $('#bankImportStatus').textContent=uiLang==='af'
+    ? 'Kies jou CSV-bankstaat om te begin.'
+    : 'Choose your CSV bank statement to begin.';
+
+  bankImportDialog.showModal();
+}
+
 async function saveBankImport(e){
-  e.preventDefault();
+  if(e)e.preventDefault();
+
+  const status=$('#bankImportStatus');
 
   if(!bankImportRows.length){
-    $('#bankImportStatus').className='notice warn';
-    $('#bankImportStatus').textContent=uiLang==='af'
+    status.className='notice warn';
+    status.textContent=uiLang==='af'
       ? 'Daar is geen transaksies om te stoor nie.'
       : 'There are no transactions to save.';
     return;
   }
 
-  const btn=$('#bankImportSaveBtn');
-  btn.disabled=true;
-
   try{
     let saved=0;
 
     for(const r of bankImportRows){
-      const type=Number(r.amount)>=0?'income':'expense';
+      const amount=Number(r.amount)||0;
+      const type=amount>=0?'income':'expense';
 
       const t={
         id:uid(),
@@ -1148,7 +1161,7 @@ async function saveBankImport(e){
         date:r.date||dateForMonth(currentMonth),
         party:String(r.description||'').trim(),
         purpose:String(r.description||'').trim(),
-        category:r.category||'Other',
+        category:r.category||(uiLang==='af'?'Ander':'Other'),
         status:type==='income'?'received':'paid',
         note:uiLang==='af'
           ? 'Vanaf bankstaat ingevoer'
@@ -1156,10 +1169,10 @@ async function saveBankImport(e){
       };
 
       if(type==='income'){
-        t.gross=Math.abs(Number(r.amount)||0);
+        t.gross=Math.abs(amount);
         t.fees=0;
       }else{
-        t.amount=Math.abs(Number(r.amount)||0);
+        t.amount=Math.abs(amount);
         t.classification=r.classification||'business';
         t.method=r.method||'EFT';
       }
@@ -1183,35 +1196,45 @@ async function saveBankImport(e){
   }catch(err){
     console.error('Bank import save error:',err);
 
-    $('#bankImportStatus').className='notice warn';
-    $('#bankImportStatus').textContent=uiLang==='af'
+    status.className='notice warn';
+    status.textContent=uiLang==='af'
       ? `Die transaksies kon nie gestoor word nie: ${err?.message||err}`
       : `The transactions could not be saved: ${err?.message||err}`;
-
-    btn.disabled=false;
   }
 }
 async function handleBankCsv(){
-  let f=$('#bankCsvFile').files[0];if(!f)return;
+  const f=$('#bankCsvFile').files[0];
+
+  if(!f)return;
+
+  const status=$('#bankImportStatus');
+
   try{
-    let text=await f.text();
+    const text=await f.text();
     bankImportRows=parseBankCsvRows(text);
+
     if(!bankImportRows.length){
-      $('#bankImportStatus').className='notice warn';
-      $('#bankImportStatus').textContent=tr('bankImportNoRows');
+      status.className='notice warn';
+      status.textContent=tr('bankImportNoRows');
       $('#bankImportPreview').innerHTML='';
-      $('#bankImportSaveBtn').disabled=true;
       return;
     }
-    $('#bankImportStatus').className='notice';
-    $('#bankImportStatus').textContent=(tr('bankImportReady')).replace('%s',bankImportRows.length);
+
+    status.className='notice';
+    status.textContent=tr('bankImportReady').replace('%s',bankImportRows.length);
+
     renderBankImportPreview();
-    $('#bankImportSaveBtn').disabled=false;
-  }catch(e){
-    console.error(e);
-    $('#bankImportStatus').className='notice warn';
-    $('#bankImportStatus').textContent=uiLang==='af'?'Ek kon nie hierdie CSV lees nie. Kontroleer dat dit ’n gewone CSV-bankstaat is.':'I could not read this CSV. Check that it is a standard CSV bank statement.';
-    $('#bankImportSaveBtn').disabled=true;
+
+  }catch(err){
+    console.error('Bank CSV import error:',err);
+
+    bankImportRows=[];
+    $('#bankImportPreview').innerHTML='';
+
+    status.className='notice warn';
+    status.textContent=uiLang==='af'
+      ? 'Ek kon nie hierdie CSV lees nie. Kontroleer dat dit ’n gewone CSV-bankstaat is.'
+      : 'I could not read this CSV. Check that it is a standard CSV bank statement.';
   }
 }
 function openReserve(type){
@@ -1617,7 +1640,7 @@ async function restoreFromFirstScreen(file){
 
 async function init(){db=await openDB();applyLang();$('#tabLogin').onclick=()=>showTab(true);$('#tabRegister').onclick=()=>showTab(false);$('#loginLang').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#regLanguage').onchange=e=>{uiLang=e.target.value;localStorage.setItem('bizUILang',uiLang);applyLang()};$('#loginForm').onsubmit=login;
 $('#firstRestoreBtn').onclick=()=>$('#firstRestoreFile').click();
-$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',async()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`;await runOCR()}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();$('#bankImportBtn').onclick=openBankImport;$('#bankCsvFile').onchange=handleBankCsv;$('#bankImportForm').onsubmit=saveBankImport;$('#recordGivingBtn').onclick=()=>openReserve('giving');$('#recordSarsBtn').onclick=()=>openReserve('sars');$('#reserveForm').onsubmit=recordReservePayment;$('#moveDeviceBtn').onclick=backupData;
+$('#firstRestoreFile').onchange=e=>e.target.files[0]&&restoreFromFirstScreen(e.target.files[0]);$('#registerForm').onsubmit=register;$('#yearSelect').onchange=()=>{$('#dashboardView').classList.contains('hidden')?openMonth(currentMonth):renderDashboard()};$('#quickIncome').onclick=()=>openTx('income',new Date().getMonth());$('#quickExpense').onclick=()=>openTx('expense',new Date().getMonth());$('#quickScan').onclick=()=>openScan(new Date().getMonth());$('#backBtn').onclick=renderDashboard;$('#monthIncomeBtn').onclick=()=>openTx('income');$('#monthExpenseBtn').onclick=()=>openTx('expense');$('#monthScanBtn').onclick=()=>openScan();$('#txForm').onsubmit=saveTx;$('#scanFile').addEventListener('change',async()=>{let f=$('#scanFile').files[0];if(f&&f.type.startsWith('image/')){let u=URL.createObjectURL(f);$('#scanPreview').innerHTML=`<img src="${u}" alt="${tr('receipts')}">`;await runOCR()}});$('#ocrBtn').onclick=runOCR;$('#scanForm').onsubmit=saveScan;$('#bankChecked').onchange=saveBank;$('#settingsBtn').onclick=openSettings;$('#settingsForm').onsubmit=saveSettings;$('#backupBtn').onclick=backupData;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);$('#reportBtn').onclick=()=>reportDialog.showModal();$('#bankImportBtn').onclick=openBankImport;$('#bankCsvFile').onchange=handleBankCsv;$('#bankImportSaveBtn').onclick=saveBankImport;$('#recordGivingBtn').onclick=()=>openReserve('giving');$('#recordSarsBtn').onclick=()=>openReserve('sars');$('#reserveForm').onsubmit=recordReservePayment;$('#moveDeviceBtn').onclick=backupData;
 $('#moveBackupBtn').onclick=backupData;
 $('#moveRestoreBtn').onclick=()=>$('#moveRestoreFile').click();
 $('#moveRestoreFile').onchange=e=>e.target.files[0]&&restoreData(e.target.files[0]);
