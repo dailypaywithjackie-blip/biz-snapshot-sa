@@ -1159,12 +1159,14 @@ async function handleBankCsv(){
     if(!bankImportRows.length){
       $('#bankImportStatus').className='notice warn';
       $('#bankImportStatus').textContent=tr('bankImportNoRows');
-      $('#bankImportPreview').innerHTML='';$('#bankImportSaveBtn').disabled=true;return;
-    
+      $('#bankImportPreview').innerHTML='';
+      $('#bankImportSaveBtn').disabled=true;
+      return;
+    }
     $('#bankImportStatus').className='notice';
     $('#bankImportStatus').textContent=(tr('bankImportReady')).replace('%s',bankImportRows.length);
     renderBankImportPreview();
-      $('#bankImportSaveBtn').disabled=false;
+    $('#bankImportSaveBtn').disabled=false;
   }catch(e){
     console.error(e);
     $('#bankImportStatus').className='notice warn';
