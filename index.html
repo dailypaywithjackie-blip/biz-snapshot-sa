@@ -676,49 +676,121 @@ async function login(e){e.preventDefault();}
 function normalizeAccount(){current.language=current.language||'af';current.givingBasis=current.givingBasis||'profit';current.sarsRate=Number(current.sarsRate??.25);current.givingRate=Number(current.givingRate??.10);current.setAside=Number(current.setAside||0);current.setAsideByFY=current.setAsideByFY||{};current.sarsPaidByFY=current.sarsPaidByFY||{...current.setAsideByFY};current.givingPaidByFY=current.givingPaidByFY||{}}
 async function restoreSession(){
   try{
-    let accounts=await all('accounts');
+    const accounts=await all('accounts');
     if(!accounts.length)return false;
 
-    let a=null;
-    const ids=[
+    const txs=await all('transactions');
+
+    // Count the transactions that belong to every account.
+    const txCount=new Map();
+    const latestTx=new Map();
+
+    for(const t of txs){
+      if(!t||!t.accountId)continue;
+
+      txCount.set(
+        t.accountId,
+        (txCount.get(t.accountId)||0)+1
+      );
+
+      const when=Date.parse(
+        t.updatedAt||t.createdAt||t.date||''
+      )||0;
+
+      latestTx.set(
+        t.accountId,
+        Math.max(latestTx.get(t.accountId)||0,when)
+      );
+    }
+
+    // First find the account remembered by this browser.
+    const savedIds=[
       localStorage.getItem('bizFriendlySession'),
       localStorage.getItem('bizSnapshotCurrentAccountId')
     ].filter(Boolean);
 
-    for(const id of ids){
-      a=accounts.find(x=>x.id===id);
-      if(a)break;
+    let savedAccount=null;
+
+    for(const id of savedIds){
+      savedAccount=accounts.find(x=>x.id===id);
+      if(savedAccount)break;
     }
 
-    if(!a){
-      if(accounts.length===1){
-        a=accounts[0];
-      }else{
-        const txs=await all('transactions');
-        const score=new Map();
-        for(const t of txs){
-          if(!t||!t.accountId)continue;
-          const when=Date.parse(t.updatedAt||t.createdAt||t.date||'')||0;
-          const prev=score.get(t.accountId)||{count:0,when:0};
-          prev.count++;
-          prev.when=Math.max(prev.when,when);
-          score.set(t.accountId,prev);
-        }
-        accounts.sort((x,y)=>{
-          const sx=score.get(x.id)||{count:0,when:0};
-          const sy=score.get(y.id)||{count:0,when:0};
-          return (sy.when-sx.when)||(sy.count-sx.count);
-        });
-        a=accounts[0];
+    let chosen=savedAccount;
+
+    /*
+      SAFE RECOVERY:
+      If the remembered account has no transactions, check whether
+      another account for the SAME business has existing transactions.
+
+      We never delete, move or rewrite transactions here.
+    */
+    if(savedAccount && (txCount.get(savedAccount.id)||0)===0){
+
+      const businessName=String(
+        savedAccount.business||''
+      ).trim().toLowerCase();
+
+      const sameBusiness=accounts.filter(a=>
+        a.id!==savedAccount.id &&
+        String(a.business||'').trim().toLowerCase()===businessName &&
+        (txCount.get(a.id)||0)>0
+      );
+
+      if(sameBusiness.length){
+        sameBusiness.sort((a,b)=>
+          (txCount.get(b.id)||0)-(txCount.get(a.id)||0) ||
+          (latestTx.get(b.id)||0)-(latestTx.get(a.id)||0)
+        );
+
+        chosen=sameBusiness[0];
       }
     }
 
-    if(!a)return false;
-    current=a;
+    // If there is no valid saved account, choose safely.
+    if(!chosen){
+      if(accounts.length===1){
+        chosen=accounts[0];
+      }else{
+        const accountsWithData=accounts
+          .filter(a=>(txCount.get(a.id)||0)>0)
+          .sort((a,b)=>
+            (txCount.get(b.id)||0)-(txCount.get(a.id)||0) ||
+            (latestTx.get(b.id)||0)-(latestTx.get(a.id)||0)
+          );
+
+        if(accountsWithData.length===1){
+          chosen=accountsWithData[0];
+        }else{
+          // Do not guess between multiple businesses.
+          return false;
+        }
+      }
+    }
+
+    if(!chosen)return false;
+
+    current=chosen;
     normalizeAccount();
-    localStorage.setItem('bizFriendlySession',current.id);
-    localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
+
+    localStorage.setItem(
+      'bizFriendlySession',
+      current.id
+    );
+
+    localStorage.setItem(
+      'bizSnapshotCurrentAccountId',
+      current.id
+    );
+
     openApp();
+    return true;
+
+  }catch(err){
+    console.error('Session restore failed',err);
+    return false;
+  }
+}
     return true;
   }catch(err){
     console.error('Session restore failed',err);
