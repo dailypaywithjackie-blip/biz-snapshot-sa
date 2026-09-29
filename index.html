@@ -533,6 +533,7 @@ h2{font-size:clamp(22px,7vw,30px)!important}
 
 <dialog id="settingsDialog"><form id="settingsForm" class="dialog-body">
   <div class="dialog-head"><h3 data-i18n="settings">Instellings</h3><button type="button" class="close" data-close="settingsDialog">×</button></div>
+  <button type="button" class="btn btn-soft full" onclick="showDataDiagnostic()" style="margin-bottom:14px">🔎 Data Check</button>
   <label><span data-i18n="businessName">Besigheidsnaam</span><input id="settingsBusiness"></label>
   <div class="form-grid"><label><span data-i18n="sarsRate">SARS-beplanning %</span><input id="settingsSars" type="number" min="0" max="100" step="0.1"></label><label><span data-i18n="givingRate">Tiende / Gee %</span><input id="settingsGiving" type="number" min="0" max="100" step="0.1"></label></div>
   <label><span data-i18n="givingBasis">Bereken Tiende/Gee op</span><select id="settingsGivingBasis"></select></label>
@@ -1337,7 +1338,49 @@ async function recordReservePayment(e){
   toast(tr('paymentSaved'));
   await renderDashboard();
 }
-function openSettings(){$('#settingsBusiness').value=current.business;$('#settingsSars').value=(current.sarsRate*100).toFixed(1);$('#settingsGiving').value=(current.givingRate*100).toFixed(1);$('#settingsGivingBasis').innerHTML=`<option value="income">${tr('incomeBasis')}</option><option value="profit">${tr('profitBasis')}</option>`;$('#settingsGivingBasis').value=current.givingBasis||'profit';$('#settingsLanguage').value=current.language||'af';normalizeAccount();$('#settingsSetAside').value=(current.sarsPaidByFY&&current.sarsPaidByFY[fy()])??(current.setAsideByFY&&current.setAsideByFY[fy()])??current.setAside??0;settingsDialog.showModal()}
+async function showDataDiagnostic(){
+  try{
+    const accounts=await all('accounts');
+    const transactions=await all('transactions');
+    const months=await all('months');
+    const receipts=await all('receipts');
+
+    const currentId=current?.id||'GEEN';
+
+    let report='BIZ SNAPSHOT DATA CHECK\n\n';
+    report+='Huidige besigheid: '+(current?.business||'Geen')+'\n';
+    report+='Huidige Account ID: '+currentId+'\n\n';
+
+    report+='TOTAAL OP HIERDIE TOESTEL\n';
+    report+='Accounts: '+accounts.length+'\n';
+    report+='Transactions: '+transactions.length+'\n';
+    report+='Months: '+months.length+'\n';
+    report+='Receipts: '+receipts.length+'\n\n';
+
+    report+='PER ACCOUNT\n';
+
+    for(const account of accounts){
+      const txCount=transactions.filter(t=>t.accountId===account.id).length;
+      const monthCount=months.filter(m=>m.accountId===account.id).length;
+      const receiptCount=receipts.filter(r=>r.accountId===account.id).length;
+
+      report+='\nBesigheid: '+(account.business||'Naam onbekend')+'\n';
+      report+='Account ID: '+account.id+'\n';
+      report+='Transactions: '+txCount+'\n';
+      report+='Months: '+monthCount+'\n';
+      report+='Receipts: '+receiptCount+'\n';
+
+      if(account.id===currentId){
+        report+='*** HUIDIGE ACCOUNT ***\n';
+      }
+    }
+
+    alert(report);
+  }catch(err){
+    alert('Data check kon nie voltooi word nie: '+String(err));
+  }
+}
+  function openSettings(){$('#settingsBusiness').value=current.business;$('#settingsSars').value=(current.sarsRate*100).toFixed(1);$('#settingsGiving').value=(current.givingRate*100).toFixed(1);$('#settingsGivingBasis').innerHTML=`<option value="income">${tr('incomeBasis')}</option><option value="profit">${tr('profitBasis')}</option>`;$('#settingsGivingBasis').value=current.givingBasis||'profit';$('#settingsLanguage').value=current.language||'af';normalizeAccount();$('#settingsSetAside').value=(current.sarsPaidByFY&&current.sarsPaidByFY[fy()])??(current.setAsideByFY&&current.setAsideByFY[fy()])??current.setAside??0;settingsDialog.showModal()}
 async function saveSettings(e){e.preventDefault();normalizeAccount();current.business=$('#settingsBusiness').value.trim()||current.business;current.sarsRate=Number($('#settingsSars').value||0)/100;current.givingRate=Number($('#settingsGiving').value||0)/100;current.givingBasis=$('#settingsGivingBasis').value;current.language=$('#settingsLanguage').value;current.setAsideByFY=current.setAsideByFY||{};current.sarsPaidByFY=current.sarsPaidByFY||{};current.sarsPaidByFY[fy()]=Number($('#settingsSetAside').value||0);current.setAsideByFY[fy()]=current.sarsPaidByFY[fy()];current.setAside=current.sarsPaidByFY[fy()];await put('accounts',current);uiLang=current.language;localStorage.setItem('bizUILang',uiLang);applyLang();settingsDialog.close();await renderDashboard();toast(tr('settingsSaved'))}
 function blobToDataURL(blob){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob)})}
 function dataURLtoBlob(s){let [head,b64]=s.split(','),type=(head.match(/data:(.*?);base64/)||[])[1]||'application/octet-stream',bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type})}
