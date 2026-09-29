@@ -1426,8 +1426,37 @@ async function backupData(){
       : 'The backup could not be created correctly. Your data is still safe on this device. Please try again.');
   }
 }
-async function deleteByAccount(store){let items=await byAccount(store);for(let x of items)await del(store,x.id)}
-async function restoreData(file){try{let data=JSON.parse(await file.text());if(!data||!Array.isArray(data.transactions))throw 0;if(!confirm(tr('restoreConfirm')))return;for(let n of ['transactions','months','receipts'])await deleteByAccount(n);for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});for(let m of (data.months||[]))await put('months',{...m,accountId:current.id});for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}if(data.business){Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{},sarsPaidByFY:data.business.sarsPaidByFY||data.business.setAsideByFY||current.sarsPaidByFY||{},givingPaidByFY:data.business.givingPaidByFY||current.givingPaidByFY||{}});await put('accounts',current);uiLang=current.language;applyLang()}if(settingsDialog.open)settingsDialog.close();if(moveDialog.open)moveDialog.close();await renderDashboard();toast(tr('restoreDone'))}catch(e){console.error(e);toast(tr('badBackup'))}}
+async function exactByAccount(store,accountId=current.id){return rq(st(store).index('accountId').getAll(accountId))}
+async function deleteByAccount(store){let items=await exactByAccount(store);for(let x of items)await del(store,x.id)}
+async function makeSafetyBackupBeforeRestore(){
+  if(!current)return null;
+  let tx=await exactByAccount('transactions'),m=await exactByAccount('months'),rs=await exactByAccount('receipts'),receipts=[];
+  for(let r of rs){let copy={...r,blob:undefined};if(r.blob)copy.blobData=await blobToDataURL(r.blob);receipts.push(copy)}
+  let data={version:6,product:'Biz Snapshot SA',safetyBackup:true,exportedAt:new Date().toISOString(),business:{business:current.business,sarsRate:current.sarsRate,givingRate:current.givingRate,givingBasis:current.givingBasis,language:current.language,setAside:current.setAside,setAsideByFY:current.setAsideByFY||{},sarsPaidByFY:current.sarsPaidByFY||{},givingPaidByFY:current.givingPaidByFY||{}},transactions:tx,months:m,receipts};
+  let json=JSON.stringify(data,null,2),blob=new Blob([json],{type:'application/json;charset=utf-8'});
+  if(!blob.size)throw new Error('Safety backup is empty');
+  let stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  downloadBlob(blob,`${safeName(current.business)}-SAFETY-before-restore-${stamp}.json`);
+  return {transactions:tx.length,months:m.length,receipts:receipts.length};
+}
+async function restoreData(file){
+ try{
+  let data=JSON.parse(await file.text());
+  if(!data||!Array.isArray(data.transactions))throw 0;
+  let currentTx=await exactByAccount('transactions');
+  if(data.transactions.length===0&&currentTx.length>0){alert(uiLang==='af'?`Restore gestop. Hierdie backup bevat 0 transaksies, maar jou huidige Biz Snapshot bevat ${currentTx.length}. Geen bestaande data is verander nie.`:`Restore stopped. This backup contains 0 transactions, but your current Biz Snapshot contains ${currentTx.length}. No existing data was changed.`);return}
+  if(!confirm(tr('restoreConfirm')))return;
+  let safety=await makeSafetyBackupBeforeRestore();
+  for(let n of ['transactions','months','receipts'])await deleteByAccount(n);
+  for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});
+  for(let m of (data.months||[]))await put('months',{...m,accountId:current.id});
+  for(let r of (data.receipts||[])){let blob=r.blobData?dataURLtoBlob(r.blobData):null;if(blob)await put('receipts',{...r,blob,blobData:undefined,accountId:current.id})}
+  if(data.business){Object.assign(current,{business:data.business.business||current.business,sarsRate:Number(data.business.sarsRate??current.sarsRate),givingRate:Number(data.business.givingRate??current.givingRate),givingBasis:data.business.givingBasis||current.givingBasis,language:data.business.language||current.language,setAside:Number(data.business.setAside||0),setAsideByFY:data.business.setAsideByFY||current.setAsideByFY||{},sarsPaidByFY:data.business.sarsPaidByFY||data.business.setAsideByFY||current.sarsPaidByFY||{},givingPaidByFY:data.business.givingPaidByFY||current.givingPaidByFY||{}});await put('accounts',current);uiLang=current.language;applyLang()}
+  if(settingsDialog.open)settingsDialog.close();if(moveDialog.open)moveDialog.close();await renderDashboard();
+  toast(tr('restoreDone'));
+  if(safety&&(safety.transactions||safety.months||safety.receipts))setTimeout(()=>alert(uiLang==='af'?'Restore klaar. ’n SAFETY-backup van jou vorige data is outomaties afgelaai voordat enigiets vervang is. Hou daardie lêer veilig.':'Restore complete. A SAFETY backup of your previous data was automatically downloaded before anything was replaced. Keep that file safe.'),150);
+ }catch(e){console.error(e);toast(tr('badBackup'))}
+}
 function safeName(s){return String(s||'Biz-Snapshot').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}
 function csvCell(v){let s=String(v??'');return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s}
 async function reportData(){let tx=(await byAccount('transactions')).filter(t=>fyOf(t)===fy()).sort((a,b)=>(a.date||'').localeCompare(b.date||'')),inc=tx.reduce((s,t)=>s+received(t),0),out=tx.reduce((s,t)=>s+bizExpense(t),0),personal=tx.reduce((s,t)=>s+personalExpense(t),0),profit=inc-out,sars=sarsDueValue(profit),giving=givingDueValue(inc,profit),sarsPaid=sarsPaidValue(),givingPaid=givingPaidValue();return{tx,inc,out,personal,profit,sars,giving,sarsPaid,givingPaid,sarsRemaining:Math.max(0,sars-sarsPaid),givingRemaining:Math.max(0,giving-givingPaid),outs:tx.reduce((s,t)=>s+outstanding(t),0)}}
@@ -1761,6 +1790,9 @@ async function restoreFromFirstScreen(file){
    await put('accounts',current)
   }
   localStorage.setItem('bizFriendlySession',current.id);localStorage.setItem('bizSnapshotCurrentAccountId',current.id);
+  let existingTx=await exactByAccount('transactions');
+  if(data.transactions.length===0&&existingTx.length>0){alert(uiLang==='af'?`Restore gestop. Hierdie backup bevat 0 transaksies, maar hierdie besigheid het reeds ${existingTx.length}. Geen bestaande data is verander nie.`:`Restore stopped. This backup contains 0 transactions, but this business already has ${existingTx.length}. No existing data was changed.`);return}
+  if(existingTx.length||(await exactByAccount('months')).length||(await exactByAccount('receipts')).length)await makeSafetyBackupBeforeRestore();
   for(let n of ['transactions','months','receipts'])await deleteByAccount(n);
   for(let t of data.transactions)await put('transactions',{...t,accountId:current.id});
   for(let mm of (data.months||[]))await put('months',{...mm,accountId:current.id});
