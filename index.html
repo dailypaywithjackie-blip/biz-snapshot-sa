@@ -1340,6 +1340,12 @@ async function recordReservePayment(e){
 }
 async function showDataDiagnostic(){
   try{
+    let report='BIZ SNAPSHOT DATA CHECK\n\n';
+
+    report+='HUIDIGE DATABASE\n';
+    report+='Naam: '+DB+'\n';
+    report+='Version: '+VER+'\n\n';
+
     const accounts=await all('accounts');
     const transactions=await all('transactions');
     const months=await all('months');
@@ -1347,35 +1353,36 @@ async function showDataDiagnostic(){
 
     const currentId=current?.id||'GEEN';
 
-    let report='BIZ SNAPSHOT DATA CHECK\n\n';
-    report+='Huidige besigheid: '+(current?.business||'Geen')+'\n';
-    report+='Huidige Account ID: '+currentId+'\n\n';
-
-    report+='TOTAAL OP HIERDIE TOESTEL\n';
+    report+='HUIDIGE DATA\n';
+    report+='Besigheid: '+(current?.business||'Geen')+'\n';
+    report+='Account ID: '+currentId+'\n';
     report+='Accounts: '+accounts.length+'\n';
     report+='Transactions: '+transactions.length+'\n';
     report+='Months: '+months.length+'\n';
     report+='Receipts: '+receipts.length+'\n\n';
 
-    report+='PER ACCOUNT\n';
+    report+='DATABASES OP HIERDIE BROWSER\n';
 
-    for(const account of accounts){
-      const txCount=transactions.filter(t=>t.accountId===account.id).length;
-      const monthCount=months.filter(m=>m.accountId===account.id).length;
-      const receiptCount=receipts.filter(r=>r.accountId===account.id).length;
+    if(typeof indexedDB.databases==='function'){
+      const databases=await indexedDB.databases();
 
-      report+='\nBesigheid: '+(account.business||'Naam onbekend')+'\n';
-      report+='Account ID: '+account.id+'\n';
-      report+='Transactions: '+txCount+'\n';
-      report+='Months: '+monthCount+'\n';
-      report+='Receipts: '+receiptCount+'\n';
-
-      if(account.id===currentId){
-        report+='*** HUIDIGE ACCOUNT ***\n';
+      if(!databases.length){
+        report+='Geen databases gevind nie.\n';
+      }else{
+        for(const database of databases){
+          report+='• '+(database.name||'Naam onbekend');
+          if(database.version){
+            report+=' | Version: '+database.version;
+          }
+          report+='\n';
+        }
       }
+    }else{
+      report+='Hierdie browser ondersteun nie database listing nie.\n';
     }
 
     alert(report);
+
   }catch(err){
     alert('Data check kon nie voltooi word nie: '+String(err));
   }
