@@ -356,7 +356,8 @@ h2{font-size:clamp(22px,7vw,30px)!important}
     <p data-i18n="activationIntro">Aktiveer jou eenmalige aankoop om hierdie toestel te gebruik.</p>
     <label style="display:none"><span data-i18n="deviceCode">Jou toestel-kode</span><div id="deviceCode" class="device"></div></label>
     <button id="copyDevice" class="btn btn-soft full" type="button" data-i18n="copyCode" style="display:none">Kopieer toestel-kode</button>
-    <label><span>E-posadres waarmee jy Biz Snapshot SA gekoop het</span><input id="licenseInput" type="email" autocomplete="email" placeholder="jou@email.co.za" required></label>
+   <label><span>E-posadres waarmee jy Biz Snapshot SA gekoop het</span><input id="licenseInput" type="email" autocomplete="email" placeholder="jou@email.co.za" required></label>
+<label><span>Purchase Key / Aankoopkode</span><input id="purchaseKeyInput" type="text" autocomplete="off" placeholder="Jou unieke aankoopkode" required></label>
     <button id="activateBtn" class="btn btn-primary full" type="button" data-i18n="activate">Aktiveer</button>
     <p class="micro" style="margin-top:15px" data-i18n="activationHelp">Betaal een keer. Geen maandelikse Biz Snapshot-fooi of credits nie. Jou aktivering is aan hierdie toestel/browser gekoppel.</p>
   </div>
@@ -676,101 +677,104 @@ async function login(e){e.preventDefault();}
 function normalizeAccount(){current.language=current.language||'af';current.givingBasis=current.givingBasis||'profit';current.sarsRate=Number(current.sarsRate??.25);current.givingRate=Number(current.givingRate??.10);current.setAside=Number(current.setAside||0);current.setAsideByFY=current.setAsideByFY||{};current.sarsPaidByFY=current.sarsPaidByFY||{...current.setAsideByFY};current.givingPaidByFY=current.givingPaidByFY||{}}
 async function restoreSession(){
   try{
-    const accounts=await all('accounts');
-    if(!accounts.length)return false;
+    const accounts = await all('accounts');
+    if(!accounts.length) return false;
 
-    const txs=await all('transactions');
+    const txs = await all('transactions');
 
-    // Count the transactions that belong to every account.
-    const txCount=new Map();
-    const latestTx=new Map();
+    // Tel hoeveel transactions aan elke account behoort
+    const txCount = new Map();
+    const latestTx = new Map();
 
     for(const t of txs){
-      if(!t||!t.accountId)continue;
+      if(!t || !t.accountId) continue;
 
       txCount.set(
         t.accountId,
-        (txCount.get(t.accountId)||0)+1
+        (txCount.get(t.accountId) || 0) + 1
       );
 
-      const when=Date.parse(
-        t.updatedAt||t.createdAt||t.date||''
-      )||0;
+      const when = Date.parse(
+        t.updatedAt || t.createdAt || t.date || ''
+      ) || 0;
 
       latestTx.set(
         t.accountId,
-        Math.max(latestTx.get(t.accountId)||0,when)
+        Math.max(latestTx.get(t.accountId) || 0, when)
       );
     }
 
-    // First find the account remembered by this browser.
-    const savedIds=[
+    // Kyk eers watter account die browser laas onthou het
+    const savedIds = [
       localStorage.getItem('bizFriendlySession'),
       localStorage.getItem('bizSnapshotCurrentAccountId')
     ].filter(Boolean);
 
-    let savedAccount=null;
+    let savedAccount = null;
 
     for(const id of savedIds){
-      savedAccount=accounts.find(x=>x.id===id);
-      if(savedAccount)break;
+      savedAccount = accounts.find(a => a.id === id);
+      if(savedAccount) break;
     }
 
-    let chosen=savedAccount;
+    let chosen = savedAccount;
 
     /*
       SAFE RECOVERY:
-      If the remembered account has no transactions, check whether
-      another account for the SAME business has existing transactions.
+      As die huidige/nuwe account geen transactions het nie,
+      kyk of daar 'n ouer account met dieselfde besigheidsnaam
+      bestaan wat wel transactions het.
 
-      We never delete, move or rewrite transactions here.
+      Ons delete, skuif of verander GEEN transactions nie.
     */
-    if(savedAccount && (txCount.get(savedAccount.id)||0)===0){
+    if(savedAccount && (txCount.get(savedAccount.id) || 0) === 0){
 
-      const businessName=String(
-        savedAccount.business||''
+      const businessName = String(
+        savedAccount.business || ''
       ).trim().toLowerCase();
 
-      const sameBusiness=accounts.filter(a=>
-        a.id!==savedAccount.id &&
-        String(a.business||'').trim().toLowerCase()===businessName &&
-        (txCount.get(a.id)||0)>0
+      const sameBusiness = accounts.filter(a =>
+        a.id !== savedAccount.id &&
+        String(a.business || '').trim().toLowerCase() === businessName &&
+        (txCount.get(a.id) || 0) > 0
       );
 
       if(sameBusiness.length){
-        sameBusiness.sort((a,b)=>
-          (txCount.get(b.id)||0)-(txCount.get(a.id)||0) ||
-          (latestTx.get(b.id)||0)-(latestTx.get(a.id)||0)
+        sameBusiness.sort((a,b) =>
+          (txCount.get(b.id) || 0) - (txCount.get(a.id) || 0) ||
+          (latestTx.get(b.id) || 0) - (latestTx.get(a.id) || 0)
         );
 
-        chosen=sameBusiness[0];
+        chosen = sameBusiness[0];
       }
     }
 
-    // If there is no valid saved account, choose safely.
+    // As daar nie 'n geldige remembered account is nie,
+    // kies slegs wanneer dit veilig en ondubbelsinnig is.
     if(!chosen){
-      if(accounts.length===1){
-        chosen=accounts[0];
+      if(accounts.length === 1){
+        chosen = accounts[0];
       }else{
-        const accountsWithData=accounts
-          .filter(a=>(txCount.get(a.id)||0)>0)
-          .sort((a,b)=>
-            (txCount.get(b.id)||0)-(txCount.get(a.id)||0) ||
-            (latestTx.get(b.id)||0)-(latestTx.get(a.id)||0)
+        const accountsWithData = accounts
+          .filter(a => (txCount.get(a.id) || 0) > 0)
+          .sort((a,b) =>
+            (txCount.get(b.id) || 0) - (txCount.get(a.id) || 0) ||
+            (latestTx.get(b.id) || 0) - (latestTx.get(a.id) || 0)
           );
 
-        if(accountsWithData.length===1){
-          chosen=accountsWithData[0];
+        if(accountsWithData.length === 1){
+          chosen = accountsWithData[0];
         }else{
-          // Do not guess between multiple businesses.
+          // Meer as een moontlike besigheid:
+          // moenie raai en verkeerde data oopmaak nie.
           return false;
         }
       }
     }
 
-    if(!chosen)return false;
+    if(!chosen) return false;
 
-    current=chosen;
+    current = chosen;
     normalizeAccount();
 
     localStorage.setItem(
@@ -787,13 +791,7 @@ async function restoreSession(){
     return true;
 
   }catch(err){
-    console.error('Session restore failed',err);
-    return false;
-  }
-}
-    return true;
-  }catch(err){
-    console.error('Session restore failed',err);
+    console.error('Session restore failed', err);
     return false;
   }
 }
@@ -1667,17 +1665,37 @@ async function gate(){
 function showLogin(){$('#activationView').classList.add('hidden');$('#loginView').classList.remove('hidden');applyLang()}
 async function activate(){
   const email=$('#licenseInput').value.trim().toLowerCase();
+  const purchaseKey=$('#purchaseKeyInput').value.trim();
   const deviceId=getDeviceId();
-  if(!email){toast('Vul asseblief jou aankoop-e-posadres in.');return}
+
+  if(!email){
+    toast('Vul asseblief jou aankoop-e-posadres in.');
+    return;
+  }
+
+  if(!purchaseKey){
+    toast('Vul asseblief jou Purchase Key / aankoopkode in.');
+    return;
+  }
+
   try{
     const r=await fetch('https://biz-snapshot-license.dailypaywithjackie.workers.dev/activate',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,deviceId})
+      body:JSON.stringify({
+        email,
+        purchaseKey,
+        deviceId
+      })
     });
+
     const data=await r.json();
+
     if(data.ok&&data.activated){
-      localStorage.setItem('bizSnapshotLicense','AUTO:'+email);
+      localStorage.setItem(
+        'bizSnapshotLicense',
+        'AUTO:'+email+':'+purchaseKey
+      );
       toast('Aktivering suksesvol');
       showLogin();
       await restoreSession();
@@ -1688,7 +1706,6 @@ async function activate(){
     toast('Aktivering kon nie bevestig word nie');
   }
 }
-
 async function restoreFromFirstScreen(file){
  try{
   let data=JSON.parse(await file.text());if(!data||!data.business||!Array.isArray(data.transactions))throw 0;
